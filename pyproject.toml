@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "arm-sparse"
+version = "0.1.0"
+description = "Reference contextual and block-sparse FFN execution for Arm CPUs"
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.24", "psutil>=5.9"]
+
+[project.optional-dependencies]
+torch = ["torch", "transformers", "accelerate", "safetensors"]
+dev = ["pytest>=7"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
