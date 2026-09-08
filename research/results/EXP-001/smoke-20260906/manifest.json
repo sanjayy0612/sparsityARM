@@ -1,0 +1,185 @@
+{
+  "experiment_id": "EXP-001",
+  "status": "completed",
+  "started_utc": "2026-09-06T07:01:43.527288+00:00",
+  "git_commit": "a022ab7d5d262ba232b4e0c59537abb4996a5c95",
+  "git_status": "M .gitignore\n M README.md\n M armsparse/runtime/dispatcher.py\n M armsparse/sparsity/blockify.py\n M tests/test_blockify.py\n?? astra/\n?? benchmarks/benchmark_ffn_micro.py\n?? benchmarks/native_ffn.py\n?? benchmarks/results/armsparse_20260808T222325846952.json\n?? benchmarks/results/sparse_20260808T222325083456.json\n?? benchmarks/results/system_info.json\n?? benchmarks/run_exp001.py\n?? cpp/\n?? research/\n?? tests/test_native_ffn.py\n?? tests/test_runtime.py",
+  "source_sha256": {
+    "cpp/ffn.cpp": "869e05246a9029443382b92939272afb4dff69f685328666b6fe877c19284ad9",
+    "benchmarks/native_ffn.py": "91beb039c346993144ca08f29fde7844ff4ee9942757a38b0e419933f7c24a9e",
+    "benchmarks/run_exp001.py": "925587f1cb4a3716a35577d0a049d50486d490b45788b02a4ff12f76181b40e6",
+    "research/experiments/EXP-001/protocol.md": "49af0f2afa311c40212dbaf62f85a1c2f1eaafa8a07b4b9aa468d66396e3aece"
+  },
+  "hardware": {
+    "cpu": {
+      "unavailable": "sysctl: sysctl fmt -1 1024 1: Operation not permitted"
+    },
+    "memory_bytes": {
+      "unavailable": "sysctl: sysctl fmt -1 1024 1: Operation not permitted"
+    },
+    "cpu_count": 8,
+    "os": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+    "arch": "arm64"
+  },
+  "compiler": "Apple clang version 21.0.0 (clang-2100.1.1.101)\nTarget: arm64-apple-darwin25.5.0\nThread model: posix\nInstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin",
+  "build_command": [
+    "xcrun",
+    "clang++",
+    "-std=c++17",
+    "-O3",
+    "-DNDEBUG",
+    "-DACCELERATE_NEW_LAPACK",
+    "-mmacosx-version-min=15.0",
+    "-dynamiclib",
+    "-framework",
+    "Accelerate",
+    "/Users/sanjayelango/Desktop/github_repos/arm-sparse/cpp/ffn.cpp",
+    "-o",
+    "/Users/sanjayelango/Desktop/github_repos/arm-sparse/build/libffn.dylib"
+  ],
+  "binary_sha256": "340faad9df6f75de0245d4ad88f4fdbf51636f5a2f5c5adcad84ebf0a64217d1",
+  "python": "3.13.5 (v3.13.5:6cb20a219a8, Jun 11 2025, 12:23:45) [Clang 16.0.0 (clang-1600.0.26.6)]",
+  "numpy": "2.5.2",
+  "thread_policy": "BLASSetThreading SINGLE_THREADED; custom kernels serial; no core pinning",
+  "invocation": [
+    "benchmarks/run_exp001.py",
+    "--hidden",
+    "32",
+    "--intermediate",
+    "128",
+    "--warmups",
+    "2",
+    "--repeats",
+    "5",
+    "--runs",
+    "1",
+    "--bank",
+    "2",
+    "--output",
+    "research/results/EXP-001/smoke-20260906"
+  ],
+  "configuration": {
+    "hidden": 32,
+    "intermediate": 128,
+    "warmups": 2,
+    "repeats": 5,
+    "runs": 1,
+    "bank": 2,
+    "seed": 1701,
+    "output": "research/results/EXP-001/smoke-20260906",
+    "case_output": null,
+    "block": 8,
+    "sparsity": 0.2,
+    "family": "scattered"
+  },
+  "aggregation": "per-case median and linear-interpolated p95; retain independent runs separately",
+  "model_revision": null,
+  "prompts": null,
+  "generated_tokens": null,
+  "limitations": [
+    "synthetic masks, no language quality or selector",
+    "no PMU/cache measurements",
+    "no controlled core affinity or thermal instrumentation",
+    "FP32 only, single-thread only",
+    "packed layouts and loop/backend differences are combined interventions"
+  ],
+  "completed_utc": "2026-09-06T07:01:46.501995+00:00",
+  "case_artifacts": [
+    {
+      "path": "run1-B8-s40-clustered.json",
+      "sha256": "2481a24b3e4cefadd6ecccc10d3f7d0a9174abd3e7a707221ae3a41d72c8e314"
+    },
+    {
+      "path": "run1-B32-s20-scattered.json",
+      "sha256": "d24ae5cf0c32f4fd1da7bd38f6297b3b22c634397b2b78ee4d7484de59685a43"
+    },
+    {
+      "path": "run1-B64-s40-scattered.json",
+      "sha256": "44fc937c135d9fd423f1983ca1ec1b6a18affd29595107f54e820c9f42616ea9"
+    },
+    {
+      "path": "run1-B16-s30-scattered.json",
+      "sha256": "41607870b67b8a2f792bbef1a29e24ccfb8802991d4dbbe39fdf41055fcd2495"
+    },
+    {
+      "path": "run1-B16-s20-clustered.json",
+      "sha256": "0911b7b56df9e73804dbdd66aed4e6172bf3150d15e2c8e1bf204bcc47db6888"
+    },
+    {
+      "path": "run1-B64-s20-clustered.json",
+      "sha256": "67652828c93ea44a59bec77a27420e61cf558816551622007c46ac0ed32f38e6"
+    },
+    {
+      "path": "run1-B16-s20-scattered.json",
+      "sha256": "f11bf323eb36d2f20388d021ba0cc6eaa801d4afeb2ad934d6830cd5a8a8e2b1"
+    },
+    {
+      "path": "run1-B8-s30-clustered.json",
+      "sha256": "3e6423aec6fd04a588902761f89b9ca48b24ec13d92fa0f81c09e25d9276e7e2"
+    },
+    {
+      "path": "run1-B8-s40-scattered.json",
+      "sha256": "89d8526aa15090de7cc0abb2dd74aa1376d2c72250850c539f72d398c8e6cdc2"
+    },
+    {
+      "path": "run1-B64-s20-scattered.json",
+      "sha256": "3bde18a4549ec6e24bedbf74c05cba782b43a3c4d5791b7e630c5bfd29545cfa"
+    },
+    {
+      "path": "run1-B32-s30-clustered.json",
+      "sha256": "1bdc694d865e10e50ebe1455f8991288dffa3b47e97574e0b13943d28ba8e499"
+    },
+    {
+      "path": "run1-B64-s30-clustered.json",
+      "sha256": "c6da0c61b1a80edcef7e958d15ac6984d443325825ecbfca6c6a06808fd259da"
+    },
+    {
+      "path": "run1-B16-s30-clustered.json",
+      "sha256": "1a97c2f2db513772bfe17ec826fc6c613cb5b616d2f2f6684ad4abdf315ecb99"
+    },
+    {
+      "path": "run1-B64-s40-clustered.json",
+      "sha256": "18b130c65a7a8903542b41ac15ee00a5ff5d2013949d9a8b3a761d431b169070"
+    },
+    {
+      "path": "run1-B16-s40-scattered.json",
+      "sha256": "cfc7b46d6e27bd0b7328b6c21ac4479390b709f54a4780598602585f93494c96"
+    },
+    {
+      "path": "run1-B16-s40-clustered.json",
+      "sha256": "0e1b7a7c0867dbce0e044a9893bfee38ab1b638cd219ca1fbad765eea0775042"
+    },
+    {
+      "path": "run1-B32-s20-clustered.json",
+      "sha256": "6013068eb2ae9ea623ac8263bc0e47a85399a4ed3ba4337353d11d460e893dc3"
+    },
+    {
+      "path": "run1-B32-s30-scattered.json",
+      "sha256": "ed9bb3a2b967ef8cda1bf0caa5edbd0b279c103f952cfbcf299c454f8ba8f6fb"
+    },
+    {
+      "path": "run1-B64-s30-scattered.json",
+      "sha256": "d126ee8573c4aff75383b79e6c4b057cbf9db44d638ace5cfb77acbf62c7556c"
+    },
+    {
+      "path": "run1-B8-s30-scattered.json",
+      "sha256": "74b9cbf959751754541d1bd53d21203a24fcfd5e1a4edf5903504ed71e471efa"
+    },
+    {
+      "path": "run1-B8-s20-clustered.json",
+      "sha256": "6b48b89413d42aafef01b94d9c95940ec615af9b6818d6dc7031a23b466ba943"
+    },
+    {
+      "path": "run1-B32-s40-clustered.json",
+      "sha256": "1d49ab31e9f5293eb22f3a7f9f5607a8482a1b53bf243a5d389efcf19d551bee"
+    },
+    {
+      "path": "run1-B32-s40-scattered.json",
+      "sha256": "6dc39a4af285a55fcd1720ad32b1197c8ef29500133cb9797d2e76e24512cf43"
+    },
+    {
+      "path": "run1-B8-s20-scattered.json",
+      "sha256": "42a564cc2b35db76004db97af166295d4ccb85e47a397e75a87cf65a7588ba86"
+    }
+  ]
+}

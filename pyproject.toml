@@ -7,10 +7,11 @@ name = "arm-sparse"
 version = "0.1.0"
 description = "Reference contextual and block-sparse FFN execution for Arm CPUs"
 requires-python = ">=3.10"
-dependencies = ["numpy>=1.24", "psutil>=5.9"]
+dependencies = ["numpy>=1.24"]
 
 [project.optional-dependencies]
-torch = ["torch", "transformers", "accelerate", "safetensors"]
+torch = ["torch"]
+model = ["torch", "transformers>=5.15,<6", "safetensors", "huggingface-hub", "psutil>=5.9"]
 dev = ["pytest>=7"]
 
 [tool.setuptools.packages.find]

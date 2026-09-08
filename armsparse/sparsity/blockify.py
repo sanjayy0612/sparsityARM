@@ -16,7 +16,8 @@ class BlockMask:
 
     @property
     def realized_sparsity(self) -> float:
-        return 1.0 - self.active_blocks / self.values.numel()
+        expanded = self.expand()
+        return 1.0 - int(expanded.sum().item()) / expanded.numel()
 
     def expand(self) -> torch.Tensor:
         return self.values.repeat_interleave(self.block_size, dim=-1)[..., : self.original_width]
@@ -37,7 +38,8 @@ def blockify(neuron_scores: torch.Tensor, block_size: int, target_sparsity: floa
         selected = torch.zeros_like(neuron_scores, dtype=torch.bool)
         if keep_neurons:
             selected.scatter_(-1, torch.topk(neuron_scores.abs(), keep_neurons, dim=-1).indices, True)
-        scores = torch.nn.functional.pad(selected, (0, blocks * block_size - width)).reshape(*selected.shape[:-1], blocks, block_size).any(-1).float()
+        chosen = torch.nn.functional.pad(selected, (0, blocks * block_size - width)).reshape(*selected.shape[:-1], blocks, block_size).any(-1)
+        return BlockMask(chosen, block_size, width, target_sparsity)
     else:
         raise ValueError("strategy must be 'top_blocks' or 'expand_neurons'")
     keep = round(blocks * (1 - target_sparsity))

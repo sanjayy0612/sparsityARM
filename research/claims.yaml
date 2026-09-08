@@ -1,0 +1,26 @@
+# Verified means checked against the retained artifacts, not a publication claim.
+claims:
+  - id: C001
+    type: quantitative_observation
+    status: verified
+    statement: At B=32 and target 40% sparsity, clustered synthetic masks yielded native-block speedup of 1.031 to 1.042 times versus base native irregular across three runs.
+    scope: Apple M2, FP32, one thread, synthetic 2048/8192 SwiGLU, equal neuron sets
+    evidence:
+      - experiment: EXP-001
+        artifacts:
+          - results/EXP-001/m2-primary-20260906/run1-B32-s40-clustered.json
+          - results/EXP-001/m2-primary-20260906/run2-B32-s40-clustered.json
+          - results/EXP-001/m2-primary-20260906/run3-B32-s40-clustered.json
+    calculation: Per-run median irregular_native latency divided by median block_native latency; range rounded to three decimals
+    limitation: Descriptive result without a significance test; does not establish a benefit from computing additional neurons or an optimum
+  - id: C002
+    type: quantitative_observation
+    status: verified
+    statement: Scattered mask expansion at B=16,32,64 retained zero block sparsity in every saved mask in this sweep.
+    scope: Synthetic uniformly scattered fixed-count active neurons at target 20/30/40 percent sparsity
+    evidence:
+      - experiment: EXP-001
+        manifest: results/EXP-001/m2-primary-20260906/manifest.json
+        case_filter: family=scattered and block_size in [16,32,64]
+        field: realized_sparsity_block
+    limitation: Does not establish the spatial distribution of real-model contextual masks

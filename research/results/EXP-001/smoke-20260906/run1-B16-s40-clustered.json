@@ -1,0 +1,231 @@
+{
+  "experiment_id": "EXP-001",
+  "scope": "synthetic_executor_only",
+  "shape": {
+    "tokens": 1,
+    "hidden": 32,
+    "intermediate": 128
+  },
+  "dtype": "float32",
+  "threads": 1,
+  "seed": 1701,
+  "block_size": 16,
+  "target_sparsity": 0.4,
+  "family": "clustered",
+  "warmups_per_variant": 2,
+  "repetitions_per_variant": 5,
+  "mask_bank_size": 2,
+  "sample_schedule": [
+    {
+      "mask_index": 0,
+      "order": [
+        "block_native",
+        "block_accelerate",
+        "irregular_native",
+        "dense_accelerate",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 1,
+      "order": [
+        "dense_accelerate",
+        "irregular_native",
+        "block_native",
+        "irregular_expanded_native",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 0,
+      "order": [
+        "dense_accelerate",
+        "irregular_expanded_native",
+        "block_accelerate",
+        "irregular_native",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 1,
+      "order": [
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "block_accelerate",
+        "irregular_native",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 0,
+      "order": [
+        "irregular_native",
+        "dense_accelerate",
+        "block_native",
+        "irregular_expanded_native",
+        "block_accelerate"
+      ]
+    }
+  ],
+  "active_neurons_base": [
+    80,
+    80
+  ],
+  "active_neurons_expanded": [
+    80,
+    80
+  ],
+  "realized_sparsity_base": [
+    0.375,
+    0.375
+  ],
+  "realized_sparsity_block": [
+    0.375,
+    0.375
+  ],
+  "dense_projection_macs": 12288,
+  "base_projection_macs": [
+    7680,
+    7680
+  ],
+  "block_projection_macs": [
+    7680,
+    7680
+  ],
+  "operation_note": "MACs cover projections only; FLOPs=2*MACs; not selection/SiLU/indexing",
+  "raw_ms": {
+    "dense_accelerate": [
+      0.001083,
+      0.001833,
+      0.001292,
+      0.001167,
+      0.001041
+    ],
+    "irregular_native": [
+      0.001166,
+      0.001083,
+      0.001083,
+      0.001292,
+      0.001125
+    ],
+    "irregular_expanded_native": [
+      0.001459,
+      0.001125,
+      0.0015,
+      0.00125,
+      0.001292
+    ],
+    "block_native": [
+      0.000875,
+      0.000875,
+      0.000917,
+      0.001,
+      0.00125
+    ],
+    "block_accelerate": [
+      0.00125,
+      0.001334,
+      0.001917,
+      0.001583,
+      0.001875
+    ]
+  },
+  "summary": {
+    "dense_accelerate": {
+      "median_ms": 0.001167,
+      "p95_ms": 0.0017247999999999999,
+      "min_ms": 0.001041,
+      "max_ms": 0.001833
+    },
+    "irregular_native": {
+      "median_ms": 0.001125,
+      "p95_ms": 0.0012668,
+      "min_ms": 0.001083,
+      "max_ms": 0.001292
+    },
+    "irregular_expanded_native": {
+      "median_ms": 0.001292,
+      "p95_ms": 0.0014918,
+      "min_ms": 0.001125,
+      "max_ms": 0.0015
+    },
+    "block_native": {
+      "median_ms": 0.000917,
+      "p95_ms": 0.0012,
+      "min_ms": 0.000875,
+      "max_ms": 0.00125
+    },
+    "block_accelerate": {
+      "median_ms": 0.001583,
+      "p95_ms": 0.0019086,
+      "min_ms": 0.00125,
+      "max_ms": 0.001917
+    }
+  },
+  "correctness": {
+    "dense_accelerate": {
+      "max_absolute_error": 1.492915002732076e-07,
+      "max_relative_l2_error": 1.3067760143397718e-07
+    },
+    "irregular_native": {
+      "max_absolute_error": 2.239308712903565e-07,
+      "max_relative_l2_error": 1.7375711500818399e-07
+    },
+    "irregular_expanded_native": {
+      "max_absolute_error": 2.239308712903565e-07,
+      "max_relative_l2_error": 1.7375711500818399e-07
+    },
+    "block_native": {
+      "max_absolute_error": 2.0884753082484053e-07,
+      "max_relative_l2_error": 1.3831560412036518e-07
+    },
+    "block_accelerate": {
+      "max_absolute_error": 1.5767521388543315e-07,
+      "max_relative_l2_error": 9.627726469425352e-08
+    }
+  },
+  "packing_ms": {
+    "neuron_down": 0.005667,
+    "block_down": 0.006792
+  },
+  "mask_construction_ms": [
+    0.059708,
+    0.03425
+  ],
+  "mask_scan_diagnostic_ms": {
+    "neuron": [
+      0.000417,
+      4.1e-05,
+      8.4e-05,
+      8.4e-05,
+      4.2e-05
+    ],
+    "block": [
+      4.2e-05,
+      4.1e-05,
+      0.0,
+      4.2e-05,
+      4.2e-05
+    ]
+  },
+  "selector": {
+    "kind": "none_synthetic_masks",
+    "deployable_selector_ms": null
+  },
+  "weight_storage_bytes": {
+    "canonical": 49152,
+    "neuron_extra": 16384,
+    "block_extra": 16384
+  },
+  "process_peak_rss_bytes_including_validation": 39436288,
+  "artifacts": {
+    "inputs_masks": {
+      "path": "run1-B16-s40-clustered.npz",
+      "sha256": "1dbebaeac8f23a5ee353d2411bba60c808e8aa64bfd7017f7ef873a0d79c77d8"
+    },
+    "weights": {
+      "path": "weights-seed-1701.npz",
+      "sha256": "3e95e2933309fe7ec6126239045fadac8a16b2d3e1a810e7df8932cb582ab9de"
+    }
+  }
+}

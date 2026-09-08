@@ -1,0 +1,3588 @@
+{
+  "experiment_id": "EXP-001",
+  "scope": "synthetic_executor_only",
+  "shape": {
+    "tokens": 1,
+    "hidden": 2048,
+    "intermediate": 8192
+  },
+  "dtype": "float32",
+  "threads": 1,
+  "seed": 1703,
+  "block_size": 64,
+  "target_sparsity": 0.3,
+  "family": "clustered",
+  "warmups_per_variant": 20,
+  "repetitions_per_variant": 200,
+  "mask_bank_size": 8,
+  "sample_schedule": [
+    {
+      "mask_index": 4,
+      "order": [
+        "irregular_expanded_native",
+        "block_native",
+        "irregular_native",
+        "dense_accelerate",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 5,
+      "order": [
+        "irregular_native",
+        "block_accelerate",
+        "irregular_expanded_native",
+        "block_native",
+        "dense_accelerate"
+      ]
+    },
+    {
+      "mask_index": 6,
+      "order": [
+        "block_accelerate",
+        "block_native",
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "irregular_native"
+      ]
+    },
+    {
+      "mask_index": 7,
+      "order": [
+        "dense_accelerate",
+        "block_native",
+        "irregular_expanded_native",
+        "irregular_native",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 0,
+      "order": [
+        "irregular_native",
+        "dense_accelerate",
+        "irregular_expanded_native",
+        "block_accelerate",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 1,
+      "order": [
+        "block_native",
+        "irregular_native",
+        "dense_accelerate",
+        "irregular_expanded_native",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 2,
+      "order": [
+        "dense_accelerate",
+        "irregular_expanded_native",
+        "block_native",
+        "irregular_native",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 3,
+      "order": [
+        "block_accelerate",
+        "irregular_expanded_native",
+        "irregular_native",
+        "dense_accelerate",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 4,
+      "order": [
+        "dense_accelerate",
+        "irregular_expanded_native",
+        "irregular_native",
+        "block_native",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 5,
+      "order": [
+        "block_accelerate",
+        "irregular_native",
+        "irregular_expanded_native",
+        "block_native",
+        "dense_accelerate"
+      ]
+    },
+    {
+      "mask_index": 6,
+      "order": [
+        "dense_accelerate",
+        "irregular_native",
+        "block_native",
+        "block_accelerate",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 7,
+      "order": [
+        "dense_accelerate",
+        "irregular_native",
+        "block_native",
+        "irregular_expanded_native",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 0,
+      "order": [
+        "block_native",
+        "dense_accelerate",
+        "irregular_native",
+        "block_accelerate",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 1,
+      "order": [
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "block_native",
+        "irregular_native",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 2,
+      "order": [
+        "irregular_expanded_native",
+        "block_native",
+        "block_accelerate",
+        "irregular_native",
+        "dense_accelerate"
+      ]
+    },
+    {
+      "mask_index": 3,
+      "order": [
+        "block_native",
+        "irregular_native",
+        "block_accelerate",
+        "dense_accelerate",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 4,
+      "order": [
+        "irregular_native",
+        "irregular_expanded_native",
+        "block_accelerate",
+        "block_native",
+        "dense_accelerate"
+      ]
+    },
+    {
+      "mask_index": 5,
+      "order": [
+        "block_native",
+        "block_accelerate",
+        "dense_accelerate",
+        "irregular_native",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 6,
+      "order": [
+        "block_accelerate",
+        "block_native",
+        "dense_accelerate",
+        "irregular_expanded_native",
+        "irregular_native"
+      ]
+    },
+    {
+      "mask_index": 7,
+      "order": [
+        "irregular_native",
+        "block_accelerate",
+        "dense_accelerate",
+        "block_native",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 0,
+      "order": [
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "irregular_native",
+        "block_accelerate",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 1,
+      "order": [
+        "irregular_native",
+        "block_accelerate",
+        "block_native",
+        "irregular_expanded_native",
+        "dense_accelerate"
+      ]
+    },
+    {
+      "mask_index": 2,
+      "order": [
+        "block_native",
+        "dense_accelerate",
+        "block_accelerate",
+        "irregular_native",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 3,
+      "order": [
+        "irregular_expanded_native",
+        "block_native",
+        "irregular_native",
+        "block_accelerate",
+        "dense_accelerate"
+      ]
+    },
+    {
+      "mask_index": 4,
+      "order": [
+        "block_native",
+        "irregular_native",
+        "dense_accelerate",
+        "block_accelerate",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 5,
+      "order": [
+        "block_native",
+        "block_accelerate",
+        "irregular_native",
+        "dense_accelerate",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 6,
+      "order": [
+        "irregular_expanded_native",
+        "block_accelerate",
+        "dense_accelerate",
+        "irregular_native",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 7,
+      "order": [
+        "irregular_native",
+        "block_native",
+        "block_accelerate",
+        "dense_accelerate",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 0,
+      "order": [
+        "dense_accelerate",
+        "block_accelerate",
+        "irregular_expanded_native",
+        "block_native",
+        "irregular_native"
+      ]
+    },
+    {
+      "mask_index": 1,
+      "order": [
+        "irregular_expanded_native",
+        "block_accelerate",
+        "block_native",
+        "dense_accelerate",
+        "irregular_native"
+      ]
+    },
+    {
+      "mask_index": 2,
+      "order": [
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "irregular_native",
+        "block_accelerate",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 3,
+      "order": [
+        "irregular_native",
+        "irregular_expanded_native",
+        "block_accelerate",
+        "block_native",
+        "dense_accelerate"
+      ]
+    },
+    {
+      "mask_index": 4,
+      "order": [
+        "block_native",
+        "block_accelerate",
+        "irregular_native",
+        "irregular_expanded_native",
+        "dense_accelerate"
+      ]
+    },
+    {
+      "mask_index": 5,
+      "order": [
+        "block_native",
+        "block_accelerate",
+        "dense_accelerate",
+        "irregular_expanded_native",
+        "irregular_native"
+      ]
+    },
+    {
+      "mask_index": 6,
+      "order": [
+        "irregular_native",
+        "irregular_expanded_native",
+        "block_accelerate",
+        "dense_accelerate",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 7,
+      "order": [
+        "block_accelerate",
+        "block_native",
+        "dense_accelerate",
+        "irregular_native",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 0,
+      "order": [
+        "dense_accelerate",
+        "irregular_native",
+        "irregular_expanded_native",
+        "block_accelerate",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 1,
+      "order": [
+        "irregular_native",
+        "dense_accelerate",
+        "block_accelerate",
+        "irregular_expanded_native",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 2,
+      "order": [
+        "irregular_native",
+        "block_native",
+        "dense_accelerate",
+        "block_accelerate",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 3,
+      "order": [
+        "block_accelerate",
+        "irregular_native",
+        "irregular_expanded_native",
+        "block_native",
+        "dense_accelerate"
+      ]
+    },
+    {
+      "mask_index": 4,
+      "order": [
+        "block_native",
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "block_accelerate",
+        "irregular_native"
+      ]
+    },
+    {
+      "mask_index": 5,
+      "order": [
+        "irregular_native",
+        "block_native",
+        "dense_accelerate",
+        "irregular_expanded_native",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 6,
+      "order": [
+        "block_native",
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "block_accelerate",
+        "irregular_native"
+      ]
+    },
+    {
+      "mask_index": 7,
+      "order": [
+        "block_native",
+        "dense_accelerate",
+        "block_accelerate",
+        "irregular_expanded_native",
+        "irregular_native"
+      ]
+    },
+    {
+      "mask_index": 0,
+      "order": [
+        "irregular_expanded_native",
+        "block_native",
+        "irregular_native",
+        "dense_accelerate",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 1,
+      "order": [
+        "irregular_expanded_native",
+        "irregular_native",
+        "dense_accelerate",
+        "block_accelerate",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 2,
+      "order": [
+        "dense_accelerate",
+        "block_native",
+        "irregular_expanded_native",
+        "irregular_native",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 3,
+      "order": [
+        "irregular_native",
+        "block_accelerate",
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 4,
+      "order": [
+        "irregular_native",
+        "block_accelerate",
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 5,
+      "order": [
+        "irregular_native",
+        "block_accelerate",
+        "block_native",
+        "dense_accelerate",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 6,
+      "order": [
+        "irregular_expanded_native",
+        "irregular_native",
+        "dense_accelerate",
+        "block_native",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 7,
+      "order": [
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "irregular_native",
+        "block_native",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 0,
+      "order": [
+        "block_native",
+        "block_accelerate",
+        "irregular_native",
+        "dense_accelerate",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 1,
+      "order": [
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "block_accelerate",
+        "irregular_native",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 2,
+      "order": [
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "block_accelerate",
+        "irregular_native",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 3,
+      "order": [
+        "block_accelerate",
+        "irregular_native",
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 4,
+      "order": [
+        "dense_accelerate",
+        "irregular_expanded_native",
+        "block_native",
+        "irregular_native",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 5,
+      "order": [
+        "dense_accelerate",
+        "irregular_native",
+        "block_accelerate",
+        "irregular_expanded_native",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 6,
+      "order": [
+        "irregular_native",
+        "dense_accelerate",
+        "irregular_expanded_native",
+        "block_native",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 7,
+      "order": [
+        "dense_accelerate",
+        "block_native",
+        "irregular_native",
+        "irregular_expanded_native",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 0,
+      "order": [
+        "block_native",
+        "dense_accelerate",
+        "irregular_expanded_native",
+        "irregular_native",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 1,
+      "order": [
+        "dense_accelerate",
+        "irregular_native",
+        "block_accelerate",
+        "irregular_expanded_native",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 2,
+      "order": [
+        "irregular_expanded_native",
+        "irregular_native",
+        "block_accelerate",
+        "block_native",
+        "dense_accelerate"
+      ]
+    },
+    {
+      "mask_index": 3,
+      "order": [
+        "dense_accelerate",
+        "irregular_native",
+        "irregular_expanded_native",
+        "block_native",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 4,
+      "order": [
+        "block_native",
+        "irregular_native",
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 5,
+      "order": [
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "block_accelerate",
+        "block_native",
+        "irregular_native"
+      ]
+    },
+    {
+      "mask_index": 6,
+      "order": [
+        "dense_accelerate",
+        "block_accelerate",
+        "block_native",
+        "irregular_expanded_native",
+        "irregular_native"
+      ]
+    },
+    {
+      "mask_index": 7,
+      "order": [
+        "irregular_native",
+        "dense_accelerate",
+        "block_accelerate",
+        "block_native",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 0,
+      "order": [
+        "block_native",
+        "irregular_native",
+        "block_accelerate",
+        "irregular_expanded_native",
+        "dense_accelerate"
+      ]
+    },
+    {
+      "mask_index": 1,
+      "order": [
+        "block_native",
+        "irregular_native",
+        "dense_accelerate",
+        "irregular_expanded_native",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 2,
+      "order": [
+        "irregular_expanded_native",
+        "block_native",
+        "irregular_native",
+        "block_accelerate",
+        "dense_accelerate"
+      ]
+    },
+    {
+      "mask_index": 3,
+      "order": [
+        "block_native",
+        "dense_accelerate",
+        "block_accelerate",
+        "irregular_native",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 4,
+      "order": [
+        "dense_accelerate",
+        "block_accelerate",
+        "block_native",
+        "irregular_native",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 5,
+      "order": [
+        "block_accelerate",
+        "dense_accelerate",
+        "irregular_native",
+        "irregular_expanded_native",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 6,
+      "order": [
+        "irregular_expanded_native",
+        "irregular_native",
+        "block_accelerate",
+        "dense_accelerate",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 7,
+      "order": [
+        "irregular_expanded_native",
+        "block_native",
+        "irregular_native",
+        "dense_accelerate",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 0,
+      "order": [
+        "irregular_expanded_native",
+        "irregular_native",
+        "dense_accelerate",
+        "block_accelerate",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 1,
+      "order": [
+        "block_native",
+        "block_accelerate",
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "irregular_native"
+      ]
+    },
+    {
+      "mask_index": 2,
+      "order": [
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "irregular_native",
+        "block_native",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 3,
+      "order": [
+        "block_accelerate",
+        "irregular_expanded_native",
+        "block_native",
+        "dense_accelerate",
+        "irregular_native"
+      ]
+    },
+    {
+      "mask_index": 4,
+      "order": [
+        "block_native",
+        "block_accelerate",
+        "irregular_native",
+        "irregular_expanded_native",
+        "dense_accelerate"
+      ]
+    },
+    {
+      "mask_index": 5,
+      "order": [
+        "irregular_native",
+        "block_native",
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 6,
+      "order": [
+        "irregular_expanded_native",
+        "block_accelerate",
+        "dense_accelerate",
+        "irregular_native",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 7,
+      "order": [
+        "irregular_expanded_native",
+        "block_accelerate",
+        "block_native",
+        "irregular_native",
+        "dense_accelerate"
+      ]
+    },
+    {
+      "mask_index": 0,
+      "order": [
+        "dense_accelerate",
+        "block_native",
+        "block_accelerate",
+        "irregular_native",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 1,
+      "order": [
+        "irregular_native",
+        "block_native",
+        "block_accelerate",
+        "dense_accelerate",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 2,
+      "order": [
+        "irregular_native",
+        "block_accelerate",
+        "block_native",
+        "dense_accelerate",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 3,
+      "order": [
+        "block_accelerate",
+        "irregular_expanded_native",
+        "block_native",
+        "irregular_native",
+        "dense_accelerate"
+      ]
+    },
+    {
+      "mask_index": 4,
+      "order": [
+        "irregular_expanded_native",
+        "irregular_native",
+        "dense_accelerate",
+        "block_native",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 5,
+      "order": [
+        "irregular_expanded_native",
+        "irregular_native",
+        "block_accelerate",
+        "block_native",
+        "dense_accelerate"
+      ]
+    },
+    {
+      "mask_index": 6,
+      "order": [
+        "block_native",
+        "dense_accelerate",
+        "irregular_expanded_native",
+        "block_accelerate",
+        "irregular_native"
+      ]
+    },
+    {
+      "mask_index": 7,
+      "order": [
+        "irregular_expanded_native",
+        "block_native",
+        "dense_accelerate",
+        "block_accelerate",
+        "irregular_native"
+      ]
+    },
+    {
+      "mask_index": 0,
+      "order": [
+        "dense_accelerate",
+        "irregular_native",
+        "block_native",
+        "block_accelerate",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 1,
+      "order": [
+        "irregular_native",
+        "block_accelerate",
+        "dense_accelerate",
+        "block_native",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 2,
+      "order": [
+        "irregular_expanded_native",
+        "irregular_native",
+        "block_accelerate",
+        "dense_accelerate",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 3,
+      "order": [
+        "dense_accelerate",
+        "block_native",
+        "block_accelerate",
+        "irregular_expanded_native",
+        "irregular_native"
+      ]
+    },
+    {
+      "mask_index": 4,
+      "order": [
+        "block_native",
+        "irregular_native",
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 5,
+      "order": [
+        "dense_accelerate",
+        "irregular_native",
+        "irregular_expanded_native",
+        "block_native",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 6,
+      "order": [
+        "irregular_native",
+        "block_accelerate",
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 7,
+      "order": [
+        "block_native",
+        "dense_accelerate",
+        "irregular_expanded_native",
+        "irregular_native",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 0,
+      "order": [
+        "irregular_expanded_native",
+        "irregular_native",
+        "block_native",
+        "dense_accelerate",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 1,
+      "order": [
+        "irregular_native",
+        "dense_accelerate",
+        "irregular_expanded_native",
+        "block_native",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 2,
+      "order": [
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "irregular_native",
+        "block_native",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 3,
+      "order": [
+        "block_accelerate",
+        "dense_accelerate",
+        "block_native",
+        "irregular_expanded_native",
+        "irregular_native"
+      ]
+    },
+    {
+      "mask_index": 4,
+      "order": [
+        "irregular_native",
+        "irregular_expanded_native",
+        "block_native",
+        "dense_accelerate",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 5,
+      "order": [
+        "block_native",
+        "dense_accelerate",
+        "irregular_expanded_native",
+        "irregular_native",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 6,
+      "order": [
+        "irregular_expanded_native",
+        "irregular_native",
+        "block_accelerate",
+        "dense_accelerate",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 7,
+      "order": [
+        "block_accelerate",
+        "dense_accelerate",
+        "irregular_expanded_native",
+        "irregular_native",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 0,
+      "order": [
+        "block_accelerate",
+        "dense_accelerate",
+        "irregular_native",
+        "irregular_expanded_native",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 1,
+      "order": [
+        "block_accelerate",
+        "block_native",
+        "dense_accelerate",
+        "irregular_expanded_native",
+        "irregular_native"
+      ]
+    },
+    {
+      "mask_index": 2,
+      "order": [
+        "dense_accelerate",
+        "block_native",
+        "block_accelerate",
+        "irregular_expanded_native",
+        "irregular_native"
+      ]
+    },
+    {
+      "mask_index": 3,
+      "order": [
+        "irregular_expanded_native",
+        "block_native",
+        "block_accelerate",
+        "irregular_native",
+        "dense_accelerate"
+      ]
+    },
+    {
+      "mask_index": 4,
+      "order": [
+        "dense_accelerate",
+        "irregular_native",
+        "block_native",
+        "irregular_expanded_native",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 5,
+      "order": [
+        "irregular_expanded_native",
+        "block_accelerate",
+        "irregular_native",
+        "dense_accelerate",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 6,
+      "order": [
+        "block_native",
+        "irregular_native",
+        "dense_accelerate",
+        "irregular_expanded_native",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 7,
+      "order": [
+        "irregular_native",
+        "dense_accelerate",
+        "block_native",
+        "irregular_expanded_native",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 0,
+      "order": [
+        "block_accelerate",
+        "irregular_native",
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 1,
+      "order": [
+        "irregular_native",
+        "block_native",
+        "block_accelerate",
+        "dense_accelerate",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 2,
+      "order": [
+        "block_native",
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "block_accelerate",
+        "irregular_native"
+      ]
+    },
+    {
+      "mask_index": 3,
+      "order": [
+        "dense_accelerate",
+        "block_native",
+        "irregular_native",
+        "block_accelerate",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 4,
+      "order": [
+        "block_accelerate",
+        "dense_accelerate",
+        "block_native",
+        "irregular_native",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 5,
+      "order": [
+        "irregular_native",
+        "block_native",
+        "block_accelerate",
+        "irregular_expanded_native",
+        "dense_accelerate"
+      ]
+    },
+    {
+      "mask_index": 6,
+      "order": [
+        "dense_accelerate",
+        "block_native",
+        "irregular_expanded_native",
+        "block_accelerate",
+        "irregular_native"
+      ]
+    },
+    {
+      "mask_index": 7,
+      "order": [
+        "irregular_expanded_native",
+        "irregular_native",
+        "block_native",
+        "block_accelerate",
+        "dense_accelerate"
+      ]
+    },
+    {
+      "mask_index": 0,
+      "order": [
+        "irregular_expanded_native",
+        "block_accelerate",
+        "dense_accelerate",
+        "irregular_native",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 1,
+      "order": [
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "irregular_native",
+        "block_accelerate",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 2,
+      "order": [
+        "block_native",
+        "irregular_native",
+        "irregular_expanded_native",
+        "block_accelerate",
+        "dense_accelerate"
+      ]
+    },
+    {
+      "mask_index": 3,
+      "order": [
+        "block_native",
+        "dense_accelerate",
+        "irregular_expanded_native",
+        "irregular_native",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 4,
+      "order": [
+        "dense_accelerate",
+        "block_accelerate",
+        "block_native",
+        "irregular_expanded_native",
+        "irregular_native"
+      ]
+    },
+    {
+      "mask_index": 5,
+      "order": [
+        "block_native",
+        "dense_accelerate",
+        "block_accelerate",
+        "irregular_expanded_native",
+        "irregular_native"
+      ]
+    },
+    {
+      "mask_index": 6,
+      "order": [
+        "block_native",
+        "dense_accelerate",
+        "irregular_expanded_native",
+        "irregular_native",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 7,
+      "order": [
+        "block_accelerate",
+        "block_native",
+        "dense_accelerate",
+        "irregular_expanded_native",
+        "irregular_native"
+      ]
+    },
+    {
+      "mask_index": 0,
+      "order": [
+        "dense_accelerate",
+        "irregular_native",
+        "irregular_expanded_native",
+        "block_accelerate",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 1,
+      "order": [
+        "dense_accelerate",
+        "block_native",
+        "block_accelerate",
+        "irregular_expanded_native",
+        "irregular_native"
+      ]
+    },
+    {
+      "mask_index": 2,
+      "order": [
+        "block_native",
+        "irregular_native",
+        "dense_accelerate",
+        "block_accelerate",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 3,
+      "order": [
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "block_accelerate",
+        "irregular_native",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 4,
+      "order": [
+        "irregular_expanded_native",
+        "block_native",
+        "irregular_native",
+        "block_accelerate",
+        "dense_accelerate"
+      ]
+    },
+    {
+      "mask_index": 5,
+      "order": [
+        "block_native",
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "irregular_native",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 6,
+      "order": [
+        "block_native",
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "block_accelerate",
+        "irregular_native"
+      ]
+    },
+    {
+      "mask_index": 7,
+      "order": [
+        "dense_accelerate",
+        "block_accelerate",
+        "irregular_expanded_native",
+        "block_native",
+        "irregular_native"
+      ]
+    },
+    {
+      "mask_index": 0,
+      "order": [
+        "irregular_expanded_native",
+        "irregular_native",
+        "block_accelerate",
+        "dense_accelerate",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 1,
+      "order": [
+        "irregular_expanded_native",
+        "block_accelerate",
+        "block_native",
+        "irregular_native",
+        "dense_accelerate"
+      ]
+    },
+    {
+      "mask_index": 2,
+      "order": [
+        "irregular_expanded_native",
+        "block_accelerate",
+        "irregular_native",
+        "block_native",
+        "dense_accelerate"
+      ]
+    },
+    {
+      "mask_index": 3,
+      "order": [
+        "irregular_native",
+        "dense_accelerate",
+        "block_native",
+        "block_accelerate",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 4,
+      "order": [
+        "irregular_native",
+        "block_native",
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 5,
+      "order": [
+        "block_native",
+        "irregular_native",
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 6,
+      "order": [
+        "block_accelerate",
+        "block_native",
+        "dense_accelerate",
+        "irregular_native",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 7,
+      "order": [
+        "irregular_native",
+        "block_accelerate",
+        "dense_accelerate",
+        "block_native",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 0,
+      "order": [
+        "dense_accelerate",
+        "irregular_native",
+        "irregular_expanded_native",
+        "block_native",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 1,
+      "order": [
+        "irregular_native",
+        "irregular_expanded_native",
+        "block_native",
+        "dense_accelerate",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 2,
+      "order": [
+        "block_accelerate",
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "irregular_native",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 3,
+      "order": [
+        "block_accelerate",
+        "dense_accelerate",
+        "irregular_native",
+        "irregular_expanded_native",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 4,
+      "order": [
+        "block_accelerate",
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "irregular_native",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 5,
+      "order": [
+        "irregular_expanded_native",
+        "block_accelerate",
+        "block_native",
+        "irregular_native",
+        "dense_accelerate"
+      ]
+    },
+    {
+      "mask_index": 6,
+      "order": [
+        "irregular_native",
+        "block_native",
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 7,
+      "order": [
+        "block_native",
+        "irregular_native",
+        "block_accelerate",
+        "dense_accelerate",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 0,
+      "order": [
+        "block_accelerate",
+        "irregular_native",
+        "block_native",
+        "dense_accelerate",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 1,
+      "order": [
+        "irregular_native",
+        "dense_accelerate",
+        "irregular_expanded_native",
+        "block_accelerate",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 2,
+      "order": [
+        "irregular_expanded_native",
+        "block_native",
+        "irregular_native",
+        "block_accelerate",
+        "dense_accelerate"
+      ]
+    },
+    {
+      "mask_index": 3,
+      "order": [
+        "irregular_native",
+        "block_accelerate",
+        "dense_accelerate",
+        "irregular_expanded_native",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 4,
+      "order": [
+        "irregular_expanded_native",
+        "block_accelerate",
+        "irregular_native",
+        "block_native",
+        "dense_accelerate"
+      ]
+    },
+    {
+      "mask_index": 5,
+      "order": [
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "irregular_native",
+        "block_native",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 6,
+      "order": [
+        "irregular_native",
+        "block_accelerate",
+        "dense_accelerate",
+        "irregular_expanded_native",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 7,
+      "order": [
+        "block_native",
+        "irregular_native",
+        "block_accelerate",
+        "dense_accelerate",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 0,
+      "order": [
+        "block_native",
+        "block_accelerate",
+        "irregular_native",
+        "irregular_expanded_native",
+        "dense_accelerate"
+      ]
+    },
+    {
+      "mask_index": 1,
+      "order": [
+        "irregular_expanded_native",
+        "block_accelerate",
+        "irregular_native",
+        "dense_accelerate",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 2,
+      "order": [
+        "irregular_expanded_native",
+        "block_native",
+        "irregular_native",
+        "dense_accelerate",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 3,
+      "order": [
+        "irregular_native",
+        "irregular_expanded_native",
+        "block_accelerate",
+        "dense_accelerate",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 4,
+      "order": [
+        "irregular_native",
+        "block_accelerate",
+        "block_native",
+        "dense_accelerate",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 5,
+      "order": [
+        "block_accelerate",
+        "dense_accelerate",
+        "irregular_native",
+        "irregular_expanded_native",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 6,
+      "order": [
+        "irregular_native",
+        "block_accelerate",
+        "dense_accelerate",
+        "irregular_expanded_native",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 7,
+      "order": [
+        "irregular_native",
+        "dense_accelerate",
+        "block_accelerate",
+        "block_native",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 0,
+      "order": [
+        "irregular_native",
+        "block_accelerate",
+        "dense_accelerate",
+        "block_native",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 1,
+      "order": [
+        "dense_accelerate",
+        "irregular_native",
+        "block_native",
+        "block_accelerate",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 2,
+      "order": [
+        "block_accelerate",
+        "irregular_expanded_native",
+        "block_native",
+        "irregular_native",
+        "dense_accelerate"
+      ]
+    },
+    {
+      "mask_index": 3,
+      "order": [
+        "block_native",
+        "block_accelerate",
+        "irregular_native",
+        "dense_accelerate",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 4,
+      "order": [
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "block_native",
+        "irregular_native",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 5,
+      "order": [
+        "irregular_native",
+        "block_accelerate",
+        "block_native",
+        "dense_accelerate",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 6,
+      "order": [
+        "irregular_expanded_native",
+        "block_native",
+        "irregular_native",
+        "block_accelerate",
+        "dense_accelerate"
+      ]
+    },
+    {
+      "mask_index": 7,
+      "order": [
+        "dense_accelerate",
+        "block_native",
+        "irregular_expanded_native",
+        "block_accelerate",
+        "irregular_native"
+      ]
+    },
+    {
+      "mask_index": 0,
+      "order": [
+        "irregular_native",
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "block_native",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 1,
+      "order": [
+        "block_native",
+        "dense_accelerate",
+        "irregular_native",
+        "irregular_expanded_native",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 2,
+      "order": [
+        "block_accelerate",
+        "block_native",
+        "irregular_native",
+        "irregular_expanded_native",
+        "dense_accelerate"
+      ]
+    },
+    {
+      "mask_index": 3,
+      "order": [
+        "block_accelerate",
+        "irregular_native",
+        "irregular_expanded_native",
+        "block_native",
+        "dense_accelerate"
+      ]
+    },
+    {
+      "mask_index": 4,
+      "order": [
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "block_native",
+        "block_accelerate",
+        "irregular_native"
+      ]
+    },
+    {
+      "mask_index": 5,
+      "order": [
+        "dense_accelerate",
+        "irregular_expanded_native",
+        "block_native",
+        "block_accelerate",
+        "irregular_native"
+      ]
+    },
+    {
+      "mask_index": 6,
+      "order": [
+        "irregular_expanded_native",
+        "block_native",
+        "block_accelerate",
+        "irregular_native",
+        "dense_accelerate"
+      ]
+    },
+    {
+      "mask_index": 7,
+      "order": [
+        "block_native",
+        "block_accelerate",
+        "dense_accelerate",
+        "irregular_native",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 0,
+      "order": [
+        "block_accelerate",
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "irregular_native",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 1,
+      "order": [
+        "dense_accelerate",
+        "block_accelerate",
+        "irregular_expanded_native",
+        "irregular_native",
+        "block_native"
+      ]
+    },
+    {
+      "mask_index": 2,
+      "order": [
+        "irregular_native",
+        "block_native",
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 3,
+      "order": [
+        "irregular_expanded_native",
+        "block_accelerate",
+        "irregular_native",
+        "block_native",
+        "dense_accelerate"
+      ]
+    },
+    {
+      "mask_index": 4,
+      "order": [
+        "irregular_native",
+        "block_native",
+        "block_accelerate",
+        "irregular_expanded_native",
+        "dense_accelerate"
+      ]
+    },
+    {
+      "mask_index": 5,
+      "order": [
+        "block_accelerate",
+        "block_native",
+        "dense_accelerate",
+        "irregular_native",
+        "irregular_expanded_native"
+      ]
+    },
+    {
+      "mask_index": 6,
+      "order": [
+        "irregular_native",
+        "dense_accelerate",
+        "irregular_expanded_native",
+        "block_native",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 7,
+      "order": [
+        "block_accelerate",
+        "irregular_native",
+        "block_native",
+        "irregular_expanded_native",
+        "dense_accelerate"
+      ]
+    },
+    {
+      "mask_index": 0,
+      "order": [
+        "dense_accelerate",
+        "block_accelerate",
+        "irregular_expanded_native",
+        "block_native",
+        "irregular_native"
+      ]
+    },
+    {
+      "mask_index": 1,
+      "order": [
+        "dense_accelerate",
+        "irregular_expanded_native",
+        "irregular_native",
+        "block_native",
+        "block_accelerate"
+      ]
+    },
+    {
+      "mask_index": 2,
+      "order": [
+        "block_accelerate",
+        "block_native",
+        "irregular_expanded_native",
+        "dense_accelerate",
+        "irregular_native"
+      ]
+    },
+    {
+      "mask_index": 3,
+      "order": [
+        "dense_accelerate",
+        "block_accelerate",
+        "irregular_expanded_native",
+        "irregular_native",
+        "block_native"
+      ]
+    }
+  ],
+  "active_neurons_base": [
+    5760,
+    5760,
+    5760,
+    5760,
+    5760,
+    5760,
+    5760,
+    5760
+  ],
+  "active_neurons_expanded": [
+    5760,
+    5760,
+    5760,
+    5760,
+    5760,
+    5760,
+    5760,
+    5760
+  ],
+  "realized_sparsity_base": [
+    0.296875,
+    0.296875,
+    0.296875,
+    0.296875,
+    0.296875,
+    0.296875,
+    0.296875,
+    0.296875
+  ],
+  "realized_sparsity_block": [
+    0.296875,
+    0.296875,
+    0.296875,
+    0.296875,
+    0.296875,
+    0.296875,
+    0.296875,
+    0.296875
+  ],
+  "dense_projection_macs": 50331648,
+  "base_projection_macs": [
+    35389440,
+    35389440,
+    35389440,
+    35389440,
+    35389440,
+    35389440,
+    35389440,
+    35389440
+  ],
+  "block_projection_macs": [
+    35389440,
+    35389440,
+    35389440,
+    35389440,
+    35389440,
+    35389440,
+    35389440,
+    35389440
+  ],
+  "operation_note": "MACs cover projections only; FLOPs=2*MACs; not selection/SiLU/indexing",
+  "raw_ms": {
+    "dense_accelerate": [
+      3.922875,
+      4.30525,
+      4.507,
+      4.422375,
+      4.14175,
+      4.131625,
+      4.6095,
+      4.22,
+      4.329583,
+      4.757833,
+      4.514167,
+      3.996583,
+      4.255291,
+      4.278542,
+      4.01575,
+      4.4185,
+      4.901291,
+      4.660958,
+      4.145209,
+      4.334459,
+      3.950875,
+      4.059583,
+      4.193792,
+      4.218959,
+      4.519,
+      4.11,
+      4.430875,
+      4.470083,
+      8.327542,
+      4.675041,
+      6.789958,
+      4.491375,
+      4.125,
+      4.31525,
+      4.137042,
+      4.267167,
+      4.356667,
+      4.256,
+      4.110291,
+      4.374791,
+      4.000583,
+      4.684042,
+      4.144584,
+      4.249375,
+      3.950667,
+      4.354375,
+      4.460167,
+      4.567291,
+      4.203917,
+      4.139291,
+      4.48575,
+      4.317709,
+      4.526791,
+      4.016125,
+      3.93325,
+      4.077291,
+      4.034583,
+      4.053334,
+      3.931708,
+      5.172833,
+      3.951708,
+      3.9925,
+      4.024667,
+      4.107541,
+      3.947375,
+      4.219833,
+      4.08875,
+      4.046125,
+      4.269958,
+      4.69525,
+      4.209083,
+      4.290666,
+      4.223792,
+      4.333666,
+      4.299084,
+      4.380625,
+      4.160875,
+      4.209375,
+      4.137042,
+      4.348083,
+      4.3265,
+      4.144333,
+      4.6605,
+      4.578042,
+      4.442084,
+      4.35525,
+      4.057792,
+      4.394458,
+      4.04325,
+      4.485333,
+      4.171417,
+      4.06175,
+      4.263042,
+      4.339084,
+      4.403541,
+      4.133,
+      4.250208,
+      4.152125,
+      4.107333,
+      4.175417,
+      4.063875,
+      4.263458,
+      4.363083,
+      4.667708,
+      4.378334,
+      4.386083,
+      4.274167,
+      4.39425,
+      4.686417,
+      4.129167,
+      4.150333,
+      4.229583,
+      4.349416,
+      4.012,
+      3.976416,
+      3.945959,
+      3.977875,
+      4.015708,
+      3.95875,
+      4.087167,
+      4.030084,
+      4.048917,
+      4.123667,
+      4.167875,
+      4.159708,
+      4.307459,
+      4.430208,
+      4.549291,
+      4.649,
+      4.443167,
+      4.31925,
+      4.381584,
+      4.1905,
+      4.30425,
+      4.1235,
+      4.429458,
+      4.482583,
+      4.5145,
+      4.234375,
+      4.650834,
+      4.495875,
+      4.261042,
+      4.382541,
+      4.216084,
+      4.013208,
+      4.283583,
+      4.21925,
+      4.463625,
+      4.414,
+      4.352958,
+      4.545583,
+      5.128458,
+      4.60875,
+      4.34475,
+      4.267666,
+      4.55825,
+      4.096292,
+      4.456958,
+      4.687958,
+      4.4725,
+      4.647,
+      4.494042,
+      4.536125,
+      4.329209,
+      4.3305,
+      4.388333,
+      4.118916,
+      4.422041,
+      4.131625,
+      4.106416,
+      3.977959,
+      3.870875,
+      4.274459,
+      3.995416,
+      4.107916,
+      4.147208,
+      3.938292,
+      4.061583,
+      4.237291,
+      4.402583,
+      4.267375,
+      4.190042,
+      4.05375,
+      4.435083,
+      4.426375,
+      4.265084,
+      4.281375,
+      4.376166,
+      4.024959,
+      4.370542,
+      4.225208,
+      4.0975,
+      4.342875,
+      4.12725,
+      4.323417,
+      4.268375,
+      4.366041,
+      4.129375,
+      4.30375,
+      4.242416
+    ],
+    "irregular_native": [
+      4.164291,
+      4.340208,
+      4.457916,
+      4.094166,
+      4.373667,
+      4.233708,
+      4.141417,
+      4.307209,
+      4.296209,
+      4.404,
+      4.352916,
+      4.38425,
+      4.367917,
+      4.172083,
+      4.274666,
+      4.152083,
+      4.291667,
+      4.375083,
+      4.188083,
+      4.074958,
+      4.343,
+      4.277708,
+      4.348542,
+      4.086334,
+      4.185709,
+      4.317333,
+      4.368958,
+      3.8445,
+      4.197583,
+      6.245667,
+      4.602667,
+      4.366542,
+      4.295,
+      4.175708,
+      4.089792,
+      4.337709,
+      4.363417,
+      4.307875,
+      4.270166,
+      4.34525,
+      4.304042,
+      4.257042,
+      4.325625,
+      4.223458,
+      4.117208,
+      4.210333,
+      4.069,
+      4.499,
+      4.179583,
+      4.194333,
+      4.072542,
+      4.343,
+      4.311542,
+      4.311458,
+      4.302833,
+      4.280375,
+      4.064417,
+      4.349958,
+      4.201417,
+      4.1825,
+      4.1445,
+      4.321333,
+      4.125292,
+      4.312042,
+      4.218792,
+      4.320375,
+      4.196208,
+      4.161708,
+      4.204084,
+      4.172083,
+      4.148041,
+      4.296875,
+      4.275708,
+      4.374709,
+      4.049333,
+      4.097125,
+      4.247583,
+      4.332916,
+      4.357166,
+      4.366083,
+      4.309084,
+      4.33875,
+      4.470416,
+      4.234584,
+      4.309541,
+      4.201625,
+      4.169709,
+      4.1975,
+      4.157084,
+      4.283125,
+      4.295084,
+      4.301667,
+      4.368334,
+      4.241,
+      4.044292,
+      4.294667,
+      4.143167,
+      4.349458,
+      4.3315,
+      4.1455,
+      4.186083,
+      4.33475,
+      4.421042,
+      4.080042,
+      4.052125,
+      4.1665,
+      4.232958,
+      4.142667,
+      4.34175,
+      4.13725,
+      4.23025,
+      4.262292,
+      4.3345,
+      4.299917,
+      4.065708,
+      4.286166,
+      4.331209,
+      4.161334,
+      4.287625,
+      4.164583,
+      4.150625,
+      4.051334,
+      4.313083,
+      4.141792,
+      4.362,
+      4.4675,
+      4.187,
+      4.163416,
+      4.18225,
+      4.248292,
+      4.1485,
+      4.1715,
+      4.356792,
+      4.232458,
+      4.129833,
+      4.300667,
+      4.095708,
+      4.327708,
+      4.350208,
+      4.200542,
+      4.106667,
+      4.218083,
+      4.370667,
+      4.338459,
+      4.344041,
+      4.265041,
+      4.398375,
+      4.131791,
+      4.596333,
+      4.314125,
+      4.362083,
+      4.585,
+      4.340708,
+      4.274917,
+      4.448459,
+      4.285,
+      4.325084,
+      4.16225,
+      4.113875,
+      4.36575,
+      4.296333,
+      4.348584,
+      4.297792,
+      4.049166,
+      4.304542,
+      4.303583,
+      4.03475,
+      4.29025,
+      4.197417,
+      4.341833,
+      4.088209,
+      4.083375,
+      4.209167,
+      4.309875,
+      4.184791,
+      4.294333,
+      4.145125,
+      4.295459,
+      4.058333,
+      4.328958,
+      4.291334,
+      4.362792,
+      4.27075,
+      4.297666,
+      4.306208,
+      4.369459,
+      4.298083,
+      4.331416,
+      4.331083,
+      4.246292,
+      4.140541,
+      4.294291,
+      4.305041,
+      4.352375,
+      4.097333,
+      4.28125,
+      4.224666,
+      4.13425,
+      4.369875,
+      4.399583
+    ],
+    "irregular_expanded_native": [
+      4.087875,
+      4.395625,
+      4.396459,
+      4.240375,
+      4.389333,
+      4.468709,
+      4.504209,
+      4.75325,
+      4.716875,
+      4.259833,
+      4.284667,
+      4.063958,
+      4.304959,
+      4.244083,
+      4.307333,
+      4.2805,
+      4.763583,
+      4.166166,
+      4.334541,
+      4.148083,
+      4.081916,
+      4.235417,
+      4.234292,
+      4.180958,
+      4.306625,
+      4.347208,
+      4.173417,
+      5.191083,
+      4.400666,
+      4.513916,
+      7.003167,
+      4.167542,
+      4.223292,
+      4.397042,
+      4.049958,
+      4.149583,
+      4.174084,
+      4.351,
+      4.305875,
+      4.230792,
+      4.14925,
+      4.364667,
+      4.232292,
+      4.302042,
+      4.203041,
+      4.343083,
+      4.19925,
+      4.31825,
+      4.294333,
+      4.345209,
+      4.15075,
+      4.41625,
+      4.340125,
+      4.174834,
+      4.212708,
+      4.216625,
+      4.314792,
+      4.307041,
+      4.316625,
+      4.041209,
+      4.349625,
+      4.304041,
+      4.206541,
+      4.136709,
+      4.117166,
+      4.342208,
+      4.280541,
+      4.29325,
+      4.350125,
+      4.368417,
+      4.292458,
+      4.233584,
+      4.191083,
+      4.184834,
+      4.078208,
+      4.344292,
+      4.336,
+      4.350375,
+      4.14925,
+      5.5435,
+      4.212917,
+      4.070375,
+      4.331917,
+      4.125875,
+      4.228375,
+      4.382125,
+      4.312375,
+      4.273166,
+      4.356125,
+      4.406958,
+      4.371,
+      4.244958,
+      4.341875,
+      4.170084,
+      4.07225,
+      4.325792,
+      4.107083,
+      4.1585,
+      4.321209,
+      4.33325,
+      4.298708,
+      4.36925,
+      4.302125,
+      4.140625,
+      4.033375,
+      4.360208,
+      4.291208,
+      4.320542,
+      4.17175,
+      4.351,
+      4.291167,
+      4.178,
+      4.079166,
+      4.319833,
+      4.299416,
+      4.153792,
+      4.225042,
+      4.326625,
+      4.074292,
+      4.254459,
+      4.057167,
+      4.278625,
+      4.17725,
+      4.216,
+      4.443375,
+      4.117084,
+      4.213542,
+      4.4495,
+      4.258,
+      4.374583,
+      4.351625,
+      4.377625,
+      4.1435,
+      4.350958,
+      4.320791,
+      4.281041,
+      4.177542,
+      4.191167,
+      4.240334,
+      4.310667,
+      4.157375,
+      4.182875,
+      4.349791,
+      4.491917,
+      4.14425,
+      4.227583,
+      4.199833,
+      4.216166,
+      4.236292,
+      4.263167,
+      4.311125,
+      4.270833,
+      4.282458,
+      4.079125,
+      4.089083,
+      4.33625,
+      4.372875,
+      4.338208,
+      4.274708,
+      4.344166,
+      4.091084,
+      4.480875,
+      4.380166,
+      4.344333,
+      4.244667,
+      4.331666,
+      4.195,
+      4.183166,
+      4.327417,
+      4.14875,
+      4.332542,
+      4.230458,
+      4.200834,
+      4.269459,
+      4.28975,
+      4.321459,
+      4.150625,
+      4.343042,
+      4.159666,
+      4.19275,
+      4.192667,
+      4.167583,
+      4.185791,
+      4.21125,
+      4.348875,
+      4.3835,
+      4.256083,
+      4.134791,
+      4.29075,
+      4.342334,
+      4.073041,
+      4.333083,
+      4.28325,
+      4.156708,
+      4.365875,
+      4.176917,
+      4.349333,
+      4.3325,
+      4.252583,
+      4.3015
+    ],
+    "block_native": [
+      4.198333,
+      4.253417,
+      4.330042,
+      4.384042,
+      4.37975,
+      4.380375,
+      5.069042,
+      4.815166,
+      5.80075,
+      4.142708,
+      4.223292,
+      4.143333,
+      4.2475,
+      4.262166,
+      4.155666,
+      4.265208,
+      4.267375,
+      4.282708,
+      4.218,
+      4.272375,
+      4.237584,
+      4.232083,
+      4.271291,
+      4.123083,
+      4.370583,
+      4.24525,
+      4.0125,
+      3.850625,
+      4.235542,
+      4.264041,
+      4.496334,
+      4.239708,
+      4.292083,
+      4.269042,
+      4.281792,
+      4.2265,
+      4.232916,
+      4.266875,
+      4.108583,
+      4.157334,
+      4.28475,
+      4.171125,
+      4.259125,
+      4.208208,
+      4.121792,
+      4.272,
+      4.260166,
+      4.319459,
+      4.310042,
+      4.236958,
+      4.390125,
+      4.155166,
+      4.236792,
+      4.216833,
+      4.186458,
+      5.123875,
+      4.135167,
+      4.18575,
+      4.139584,
+      4.316,
+      4.229541,
+      4.24025,
+      4.236625,
+      4.090542,
+      4.29,
+      4.273667,
+      4.268708,
+      4.289709,
+      4.167459,
+      4.308083,
+      4.182292,
+      4.274208,
+      4.254,
+      4.090625,
+      4.386542,
+      4.130125,
+      4.326584,
+      4.200083,
+      4.230834,
+      4.375917,
+      4.244042,
+      4.147,
+      4.245875,
+      4.285792,
+      4.355917,
+      4.106667,
+      4.23525,
+      4.195209,
+      4.277583,
+      4.314834,
+      4.355041,
+      4.157708,
+      4.14075,
+      4.287458,
+      4.263959,
+      4.266042,
+      4.189833,
+      4.077625,
+      4.258916,
+      4.1385,
+      4.117542,
+      4.145041,
+      4.179167,
+      4.313667,
+      4.040625,
+      4.275375,
+      4.31125,
+      4.082458,
+      4.066625,
+      4.228375,
+      4.300708,
+      4.107917,
+      4.163333,
+      4.265833,
+      4.161208,
+      4.25325,
+      4.2575,
+      4.057125,
+      4.243708,
+      4.294458,
+      4.272,
+      4.057,
+      4.271292,
+      4.131083,
+      4.222,
+      4.23675,
+      4.220709,
+      4.354375,
+      4.247834,
+      4.134084,
+      4.186375,
+      4.276917,
+      4.232291,
+      4.334875,
+      4.16725,
+      4.23325,
+      4.118041,
+      4.295334,
+      4.255708,
+      4.200792,
+      4.276542,
+      4.236041,
+      4.203208,
+      4.341292,
+      4.180333,
+      4.319958,
+      4.269917,
+      4.443583,
+      4.151292,
+      4.148208,
+      4.202,
+      4.105458,
+      4.180583,
+      4.23775,
+      4.140666,
+      4.261375,
+      4.197458,
+      4.24125,
+      4.117792,
+      4.134167,
+      4.226125,
+      4.141959,
+      4.153916,
+      4.077166,
+      4.170208,
+      4.3065,
+      4.058792,
+      4.406792,
+      4.236625,
+      4.067625,
+      4.142334,
+      4.239917,
+      4.29925,
+      4.134667,
+      4.180667,
+      4.256333,
+      4.289208,
+      4.228333,
+      4.078,
+      4.390375,
+      4.337416,
+      4.294125,
+      4.227417,
+      4.17525,
+      4.2875,
+      4.145334,
+      4.126292,
+      4.27175,
+      4.147625,
+      4.156625,
+      4.071166,
+      4.214625,
+      4.1565,
+      4.256375,
+      4.154792,
+      4.196583,
+      4.212625,
+      4.06625,
+      4.221417,
+      4.622542
+    ],
+    "block_accelerate": [
+      3.599667,
+      3.822292,
+      3.721916,
+      3.839834,
+      3.987125,
+      5.308833,
+      3.755041,
+      4.699583,
+      3.701417,
+      4.235625,
+      3.601042,
+      3.626708,
+      3.708084,
+      3.603333,
+      3.586834,
+      3.594958,
+      4.042875,
+      3.7405,
+      3.613958,
+      3.684125,
+      3.723375,
+      3.659709,
+      3.883166,
+      3.547958,
+      4.087708,
+      3.708625,
+      3.588292,
+      3.785208,
+      4.537166,
+      3.6045,
+      4.211417,
+      3.742041,
+      3.651791,
+      3.626375,
+      3.614667,
+      3.571667,
+      3.5865,
+      3.697458,
+      3.692042,
+      3.627917,
+      3.6565,
+      3.672542,
+      3.64425,
+      3.811875,
+      3.698083,
+      3.768959,
+      3.792375,
+      3.906959,
+      3.556208,
+      3.627,
+      4.068208,
+      3.595084,
+      3.663459,
+      3.623167,
+      3.62025,
+      3.584375,
+      3.514042,
+      3.55,
+      3.517,
+      3.492875,
+      3.543833,
+      3.549834,
+      4.581208,
+      3.616375,
+      3.643958,
+      3.707542,
+      3.671166,
+      3.64325,
+      3.696209,
+      3.666959,
+      3.5505,
+      3.843459,
+      3.812458,
+      3.650625,
+      3.580959,
+      3.7055,
+      3.744708,
+      3.690333,
+      4.048334,
+      4.242416,
+      3.633583,
+      3.892625,
+      3.9305,
+      3.65525,
+      3.639083,
+      3.626125,
+      3.583167,
+      3.643208,
+      3.6605,
+      3.741125,
+      3.677583,
+      3.657333,
+      3.6985,
+      3.77575,
+      3.6825,
+      3.575,
+      3.710292,
+      3.62475,
+      3.856375,
+      3.830833,
+      3.637083,
+      3.698792,
+      3.813792,
+      4.024292,
+      3.708417,
+      3.574833,
+      3.618875,
+      3.722334,
+      3.542708,
+      3.613292,
+      3.827292,
+      3.554,
+      3.6535,
+      3.69525,
+      3.523542,
+      3.513792,
+      3.573,
+      3.530666,
+      3.624792,
+      3.565667,
+      3.562416,
+      3.504709,
+      3.581334,
+      3.553416,
+      3.719875,
+      3.6515,
+      3.645375,
+      3.936,
+      3.767416,
+      3.811458,
+      3.639958,
+      3.746709,
+      3.731417,
+      3.787,
+      3.744,
+      3.85875,
+      3.632333,
+      3.592958,
+      3.85625,
+      3.711375,
+      3.60075,
+      3.660125,
+      3.807792,
+      3.967375,
+      3.660917,
+      3.917083,
+      3.822291,
+      3.927042,
+      3.642541,
+      3.930042,
+      3.798167,
+      3.6615,
+      3.636375,
+      3.593917,
+      3.721167,
+      3.85975,
+      3.751084,
+      3.834708,
+      3.681,
+      3.951416,
+      3.663083,
+      3.718458,
+      3.844542,
+      3.674209,
+      3.701584,
+      3.624542,
+      3.623708,
+      3.711834,
+      3.647084,
+      3.5885,
+      3.502125,
+      3.626375,
+      3.560625,
+      3.493667,
+      3.56025,
+      3.563959,
+      3.529209,
+      3.607667,
+      3.591958,
+      3.580292,
+      3.712209,
+      3.701167,
+      3.673708,
+      3.706708,
+      3.667833,
+      3.941791,
+      3.524709,
+      3.802209,
+      3.537167,
+      3.867834,
+      3.727375,
+      3.721958,
+      3.744167,
+      3.721083,
+      3.635958,
+      3.697292,
+      3.727875,
+      3.590042,
+      3.710083,
+      3.816
+    ]
+  },
+  "summary": {
+    "dense_accelerate": {
+      "median_ms": 4.2675205,
+      "p95_ms": 4.67549105,
+      "min_ms": 3.870875,
+      "max_ms": 8.327542
+    },
+    "irregular_native": {
+      "median_ms": 4.285583,
+      "p95_ms": 4.404852099999999,
+      "min_ms": 3.8445,
+      "max_ms": 6.245667
+    },
+    "irregular_expanded_native": {
+      "median_ms": 4.280791000000001,
+      "p95_ms": 4.469317299999999,
+      "min_ms": 4.033375,
+      "max_ms": 7.003167
+    },
+    "block_native": {
+      "median_ms": 4.2357914999999995,
+      "p95_ms": 4.3867211500000005,
+      "min_ms": 3.850625,
+      "max_ms": 5.80075
+    },
+    "block_accelerate": {
+      "median_ms": 3.6731249999999998,
+      "p95_ms": 4.043147950000001,
+      "min_ms": 3.492875,
+      "max_ms": 5.308833
+    }
+  },
+  "correctness": {
+    "dense_accelerate": {
+      "max_absolute_error": 7.460932174574442e-07,
+      "max_relative_l2_error": 2.976958016924973e-07
+    },
+    "irregular_native": {
+      "max_absolute_error": 5.451670845202372e-06,
+      "max_relative_l2_error": 1.458787829832348e-06
+    },
+    "irregular_expanded_native": {
+      "max_absolute_error": 5.451670845202372e-06,
+      "max_relative_l2_error": 1.458787829832348e-06
+    },
+    "block_native": {
+      "max_absolute_error": 9.670674625539277e-07,
+      "max_relative_l2_error": 3.6814404323440267e-07
+    },
+    "block_accelerate": {
+      "max_absolute_error": 8.608840600388135e-07,
+      "max_relative_l2_error": 2.7593520824472386e-07
+    }
+  },
+  "packing_ms": {
+    "neuron_down": 90.712042,
+    "block_down": 19.9865
+  },
+  "mask_construction_ms": [
+    0.126291,
+    0.027,
+    0.025625,
+    0.014834,
+    0.020084,
+    0.013667,
+    0.01825,
+    0.012959
+  ],
+  "mask_scan_diagnostic_ms": {
+    "neuron": [
+      0.0065,
+      0.004375,
+      0.004167,
+      0.004209,
+      0.004125,
+      0.00425,
+      0.004208,
+      0.004208,
+      0.004292,
+      0.00425,
+      0.004167,
+      0.00425,
+      0.004208,
+      0.004166,
+      0.004209,
+      0.004208,
+      0.004208,
+      0.004209,
+      0.004167,
+      0.004167,
+      0.004208,
+      0.004208,
+      0.004167,
+      0.00425,
+      0.004208,
+      0.004208,
+      0.004167,
+      0.004209,
+      0.004209,
+      0.00425,
+      0.004209,
+      0.00425,
+      0.004208,
+      0.00425,
+      0.004125,
+      0.004167,
+      0.004208,
+      0.00425,
+      0.004208,
+      0.00425,
+      0.004208,
+      0.00425,
+      0.004125,
+      0.004208,
+      0.00425,
+      0.004208,
+      0.004208,
+      0.00425,
+      0.00425,
+      0.004291,
+      0.004166,
+      0.004208,
+      0.004209,
+      0.004209,
+      0.004208,
+      0.00425,
+      0.00425,
+      0.004291,
+      0.004166,
+      0.004208,
+      0.004208,
+      0.004208,
+      0.004208,
+      0.00425,
+      0.004208,
+      0.00425,
+      0.004166,
+      0.004208,
+      0.004208,
+      0.004209,
+      0.004292,
+      0.00425,
+      0.004209,
+      0.004209,
+      0.004166,
+      0.004208,
+      0.004208,
+      0.004208,
+      0.004209,
+      0.00425,
+      0.004208,
+      0.004208,
+      0.004125,
+      0.004208,
+      0.004166,
+      0.004208,
+      0.00425,
+      0.00425,
+      0.004208,
+      0.00425,
+      0.004125,
+      0.004208,
+      0.004166,
+      0.004208,
+      0.00425,
+      0.00425,
+      0.004208,
+      0.00425,
+      0.004125,
+      0.00425,
+      0.00425,
+      0.004208,
+      0.004208,
+      0.00425,
+      0.00425,
+      0.00425,
+      0.004167,
+      0.00425,
+      0.004209,
+      0.004209,
+      0.00425,
+      0.00425,
+      0.004208,
+      0.00425,
+      0.004125,
+      0.004208,
+      0.004292,
+      0.004208,
+      0.00425,
+      0.004292,
+      0.004209,
+      0.004333,
+      0.004166,
+      0.004209,
+      0.00425,
+      0.00425,
+      0.00425,
+      0.00425,
+      0.004209,
+      0.00425,
+      0.004125,
+      0.00425,
+      0.004208,
+      0.004167,
+      0.00425,
+      0.004209,
+      0.004208,
+      0.00425,
+      0.004125,
+      0.00425,
+      0.004209,
+      0.00425,
+      0.004208,
+      0.004292,
+      0.004208,
+      0.004292,
+      0.004166,
+      0.00425,
+      0.004208,
+      0.004208,
+      0.004208,
+      0.004208,
+      0.004208,
+      0.004208,
+      0.004167,
+      0.00425,
+      0.00425,
+      0.004208,
+      0.004209,
+      0.004333,
+      0.004208,
+      0.00425,
+      0.004166,
+      0.00425,
+      0.004209,
+      0.004167,
+      0.00425,
+      0.004291,
+      0.00425,
+      0.00425,
+      0.004125,
+      0.004291,
+      0.004208,
+      0.004209,
+      0.004208,
+      0.00425,
+      0.004208,
+      0.00425,
+      0.004166,
+      0.00425,
+      0.004208,
+      0.004167,
+      0.004208,
+      0.004291,
+      0.00425,
+      0.00425,
+      0.004125,
+      0.00425,
+      0.004208,
+      0.004208,
+      0.00425,
+      0.00425,
+      0.004208,
+      0.00425,
+      0.004125,
+      0.004208,
+      0.004208,
+      0.00425,
+      0.00425,
+      0.004208
+    ],
+    "block": [
+      0.000625,
+      0.000625,
+      0.000625,
+      0.0005,
+      0.000458,
+      0.000625,
+      0.000417,
+      0.000542,
+      0.000417,
+      0.000208,
+      0.000208,
+      0.000208,
+      0.000208,
+      0.00025,
+      0.000167,
+      0.000208,
+      0.00025,
+      0.000125,
+      0.000125,
+      0.000125,
+      0.000125,
+      0.000167,
+      0.000167,
+      0.000167,
+      0.000125,
+      0.000125,
+      0.000125,
+      8.3e-05,
+      0.000125,
+      0.000125,
+      0.000125,
+      8.3e-05,
+      0.000125,
+      0.000125,
+      0.000125,
+      0.000125,
+      8.3e-05,
+      8.3e-05,
+      8.3e-05,
+      0.000125,
+      0.000125,
+      0.000125,
+      8.3e-05,
+      0.000125,
+      0.000125,
+      0.000125,
+      0.000125,
+      8.4e-05,
+      0.000125,
+      0.000125,
+      0.000125,
+      0.000125,
+      0.000125,
+      8.3e-05,
+      0.000125,
+      0.000125,
+      0.000125,
+      0.000125,
+      8.3e-05,
+      8.3e-05,
+      0.000125,
+      8.4e-05,
+      8.4e-05,
+      8.3e-05,
+      0.000125,
+      0.000125,
+      8.3e-05,
+      8.3e-05,
+      0.000125,
+      0.000125,
+      0.000125,
+      8.3e-05,
+      8.3e-05,
+      0.000125,
+      8.4e-05,
+      0.000125,
+      0.000125,
+      8.4e-05,
+      0.000125,
+      0.000125,
+      0.000125,
+      0.000125,
+      8.4e-05,
+      8.3e-05,
+      0.000125,
+      0.000125,
+      0.000125,
+      0.000125,
+      0.000125,
+      0.000125,
+      8.4e-05,
+      0.000125,
+      8.3e-05,
+      0.000125,
+      8.3e-05,
+      0.000125,
+      0.000125,
+      0.000125,
+      8.4e-05,
+      0.000125,
+      8.3e-05,
+      0.000125,
+      8.3e-05,
+      8.3e-05,
+      0.000125,
+      0.000125,
+      8.3e-05,
+      8.4e-05,
+      8.3e-05,
+      0.000125,
+      8.3e-05,
+      8.3e-05,
+      0.000125,
+      0.000125,
+      8.3e-05,
+      0.000125,
+      8.4e-05,
+      0.000125,
+      0.000125,
+      0.000125,
+      0.000125,
+      0.000125,
+      0.000125,
+      0.000125,
+      8.3e-05,
+      0.000125,
+      0.000125,
+      0.000125,
+      0.000125,
+      0.000125,
+      8.3e-05,
+      0.000125,
+      0.000125,
+      0.000125,
+      0.000125,
+      8.3e-05,
+      0.000125,
+      0.000125,
+      0.000125,
+      8.3e-05,
+      8.4e-05,
+      0.000125,
+      0.000125,
+      8.3e-05,
+      0.000125,
+      0.000125,
+      0.000125,
+      8.3e-05,
+      0.000125,
+      0.000125,
+      8.3e-05,
+      0.000125,
+      0.000125,
+      0.000125,
+      8.3e-05,
+      0.000125,
+      8.3e-05,
+      0.000125,
+      8.3e-05,
+      0.000125,
+      0.000125,
+      0.000125,
+      8.3e-05,
+      8.3e-05,
+      0.000125,
+      0.000125,
+      0.000125,
+      0.000125,
+      0.000125,
+      0.000125,
+      8.3e-05,
+      0.000125,
+      8.3e-05,
+      0.000125,
+      0.000125,
+      8.3e-05,
+      0.000125,
+      0.000125,
+      8.3e-05,
+      0.000125,
+      0.000125,
+      8.4e-05,
+      8.4e-05,
+      8.3e-05,
+      0.000125,
+      0.000125,
+      8.3e-05,
+      0.000125,
+      0.000125,
+      0.000125,
+      0.000125,
+      8.3e-05,
+      0.000125,
+      0.000125,
+      8.3e-05,
+      8.3e-05,
+      8.3e-05,
+      0.000125,
+      0.000125,
+      0.000125
+    ]
+  },
+  "selector": {
+    "kind": "none_synthetic_masks",
+    "deployable_selector_ms": null
+  },
+  "weight_storage_bytes": {
+    "canonical": 201326592,
+    "neuron_extra": 67108864,
+    "block_extra": 67108864
+  },
+  "process_peak_rss_bytes_including_validation": 508870656,
+  "artifacts": {
+    "inputs_masks": {
+      "path": "run3-B64-s30-clustered.npz",
+      "sha256": "c652f89354f3b67f6093afec1f876e1df97c0f58798a3c247ab177f394bf9a47"
+    },
+    "weights": {
+      "path": "weights-seed-1703.npz",
+      "sha256": "ffc4e98ea336990f6460747d36c4e16cb3397b927eb54ec2b459aa79892bfa7d"
+    }
+  }
+}

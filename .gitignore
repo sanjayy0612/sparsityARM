@@ -1,13 +1,22 @@
 __pycache__/
+.DS_Store
 .pytest_cache/
 .venv/
 *.egg-info/
 build/
 dist/
-benchmarks/results/*.json
-!benchmarks/results/.gitkeep
-models
 
-docs
-PLAN.md
-RESULTS.md
+# Local model downloads and checkpoints.
+models/
+
+# Benchmark output is reproducible and should remain local. Keep the directory.
+benchmarks/results/*.json
+benchmarks/results/*.log
+benchmarks/results/*.npz
+!benchmarks/results/.gitkeep
+
+# Experiment artifacts: retain manifests, metrics, summaries and provenance;
+# keep raw arrays, per-case logs and generated working-tree snapshots local.
+research/results/**/*.npz
+research/results/**/*.log
+research/results/**/working-tree.patch
