@@ -75,8 +75,9 @@ executor. The native block kernel was 37–39% slower than optimized dense in al
 three runs, so this configuration does not provide a speedup.
 
 EXP-006 implements fixed per-layer neuron reordering learned only from EXP-002
-calibration activations. The deterministic hierarchical layout is ready for a
-held-out B8/B16/B32 quality screen at 20–30% sparsity; it has not yet been run.
+calibration activations. Its deterministic LSH layout improved matched B8/B16
+quality slightly, but no held-out 20–30% configuration met the 5% perplexity
+gate.
 
 ## Repository
 

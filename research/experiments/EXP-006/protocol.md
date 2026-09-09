@@ -1,6 +1,6 @@
 # EXP-006 — Coactivation-aware neuron reordering
 
-Status: held-out B8/B16/B32 at 20/30% approved 2026-09-09; run in progress.
+Status: held-out run completed and independently validated 2026-09-10.
 
 ## Question
 

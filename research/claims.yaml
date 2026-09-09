@@ -121,3 +121,15 @@ claims:
         manifest: results/EXP-005/m2-replay-20260909/manifest.json
     calculation: Dense median divided by native irregular median minus one; idealized speedup is 1/(1-realized sparsity)-1
     limitation: Dense and irregular use different layouts/backends; no hardware counters or significance test
+  - id: C012
+    type: quantitative_observation
+    status: verified
+    statement: A fixed calibration-only LSH neuron layout improved all four matched B8/B16 output-norm screening perplexities relative to original order, but every reordered 20% and 30% configuration still exceeded the preregistered 5% degradation threshold.
+    scope: Pinned Llama 3.2 1B, CPU BF16, 16 deterministic held-out WikiText-2 excerpts, 2032 predicted tokens
+    evidence:
+      - experiment: EXP-006
+        manifest: results/EXP-006/m2-reordered-screening-20260909/manifest.json
+        conditions: [block_output_norm-B8-s20, block_output_norm-B8-s30, block_output_norm-B16-s20, block_output_norm-B16-s30, block_output_norm-B32-s20, block_output_norm-B32-s30]
+      - experiment: EXP-004
+        manifest: results/EXP-004/m2-oracle-screening-20260909/manifest.json
+    limitation: Small screening corpus and one inexpensive LSH layout; B32 has no matched original-order output-norm baseline and is excluded from the improvement comparison
