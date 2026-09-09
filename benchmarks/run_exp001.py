@@ -61,14 +61,23 @@ def run_case(args):
     start = time.perf_counter_ns()
     block_down = down.reshape(h, m//b, b).transpose(1, 0, 2).copy()
     block_pack_ms = (time.perf_counter_ns() - start)/1e6
-    base_masks, block_masks, construction_ms = [], [], []
-    for _ in range(args.bank):
-        start = time.perf_counter_ns()
-        base, blocks = mask_pair(rng, m, b, args.sparsity, args.family)
-        construction_ms.append((time.perf_counter_ns() - start)/1e6)
-        base_masks.append(base)
-        block_masks.append(blocks)
-    base_masks, block_masks = np.array(base_masks), np.array(block_masks)
+    if args.mask_bank:
+        replay = np.load(args.mask_bank)
+        block_masks = replay["block_masks"].astype(np.uint8, copy=False)
+        expected = (args.bank, m//b)
+        if block_masks.shape != expected or not np.isin(block_masks, (0, 1)).all():
+            raise ValueError(f"replay block_masks must be binary {expected}")
+        base_masks = np.repeat(block_masks, b, axis=1)
+        construction_ms = []
+    else:
+        base_masks, block_masks, construction_ms = [], [], []
+        for _ in range(args.bank):
+            start = time.perf_counter_ns()
+            base, blocks = mask_pair(rng, m, b, args.sparsity, args.family)
+            construction_ms.append((time.perf_counter_ns() - start)/1e6)
+            base_masks.append(base)
+            block_masks.append(blocks)
+        base_masks, block_masks = np.array(base_masks), np.array(block_masks)
     expanded = np.repeat(block_masks, b, axis=1)
     artifact = Path(args.case_output).with_suffix(".npz")
     # Full weights are shared per run; inputs and masks are case artifacts.
@@ -146,6 +155,10 @@ def run_case(args):
         "artifacts": {"inputs_masks": {"path": artifact.name, "sha256": digest(artifact)},
                       "weights": {"path": weights_path.name, "sha256": digest(weights_path)}},
     }
+    if args.mask_bank:
+        record["selector"] = {"kind": "offline_replay_mask", "deployable_selector_ms": None}
+        record["artifacts"]["replay_mask_bank"] = {
+            "path": str(Path(args.mask_bank).resolve()), "sha256": digest(args.mask_bank)}
     write_json(Path(args.case_output), record)
 
 
@@ -162,12 +175,15 @@ def main():
     parser.add_argument("--case-output")
     parser.add_argument("--block", type=int, choices=[8, 16, 32, 64], default=8)
     parser.add_argument("--sparsity", type=float, default=.2)
-    parser.add_argument("--family", choices=["scattered", "clustered"], default="scattered")
+    parser.add_argument("--family", choices=["scattered", "clustered", "replay"], default="scattered")
+    parser.add_argument("--mask-bank", type=Path)
     args = parser.parse_args()
     if min(args.hidden, args.intermediate, args.repeats, args.runs, args.bank) <= 0 or args.warmups < 0:
         parser.error("dimensions/repeats/runs/bank must be positive and warmups nonnegative")
     if args.intermediate % 64 or not 0 <= args.sparsity <= 1:
         parser.error("intermediate must be divisible by 64; sparsity must be in [0,1]")
+    if (args.family == "replay") != bool(args.mask_bank):
+        parser.error("family=replay requires --mask-bank, and --mask-bank requires family=replay")
     if args.case_output:
         run_case(args)
         return
