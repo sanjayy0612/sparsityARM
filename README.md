@@ -15,8 +15,10 @@ EXP-001 is complete: native CPU execution for a synthetic 2048 → 8192 → 2048
 FFN, comparing Accelerate dense, irregular skipping, native packed blocks and
 Accelerate packed blocks. Python kernels remain tested correctness references.
 EXP-002 adds verified Llama 3.2 1B activation-mask coverage. Deployable
-selection, quality evaluation, real-model sparse execution and hardware-counter
-profiling have not been implemented. LUNA tooling and LaTeX are deferred.
+selection, real-model sparse execution and hardware-counter profiling have not
+been implemented. EXP-003 now has a quality-evaluation harness, but its real
+corpus and acceptance threshold remain intentionally unapproved. LUNA tooling
+and LaTeX are deferred.
 
 ## Install and test
 
@@ -55,7 +57,9 @@ executor observations, not end-to-end LLM speedups.
 
 EXP-002 found that exact expansion of Llama 3.2 1B neuron top-k masks
 erases essentially all sparsity at B=8–64. The next decision is a quality
-protocol for direct block-aware masks. Hypotheses and evidence-backed observations are tracked
+protocol for direct block-aware masks. The EXP-003 implementation compares
+dense, neuron top-k, block top-k and random-block controls, but it is not a
+speed benchmark. Hypotheses and evidence-backed observations are tracked
 in [research state](research/project.yaml), [hypotheses](research/hypotheses.yaml)
 and [claims](research/claims.yaml).
 
