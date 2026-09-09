@@ -1,6 +1,6 @@
 # EXP-005 — B8/10% replay executor gate
 
-Status: implementation and 3-run protocol approved 2026-09-09; execution pending.
+Status: completed and independently validated 2026-09-09.
 
 ## Question
 

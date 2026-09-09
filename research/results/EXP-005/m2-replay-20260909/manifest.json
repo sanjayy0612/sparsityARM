@@ -1,0 +1,198 @@
+{
+  "experiment_id": "EXP-005",
+  "status": "completed",
+  "started_utc": "2026-09-09T16:31:14.757876+00:00",
+  "git_commit": "f21d72c2c1f9078197723ef2fc07c57568e29b8d",
+  "git_status": "",
+  "source_sha256": {
+    "cpp/ffn.cpp": "869e05246a9029443382b92939272afb4dff69f685328666b6fe877c19284ad9",
+    "benchmarks/native_ffn.py": "91beb039c346993144ca08f29fde7844ff4ee9942757a38b0e419933f7c24a9e",
+    "benchmarks/run_exp001.py": "c4941fb5f8384d798a3738e1c752176cb0b70916159c6f02cbd445e4e47444cb",
+    "benchmarks/run_exp005.py": "f0ab9f28b2a861f361683cc0f9372d5479e542e4f224ca08ce50ce7dea092908",
+    "benchmarks/prepare_exp005_masks.py": "7a78c10b43a7a9282dfa1c1195ab81f36d9ec77914572304ec60c8bfcea7205b",
+    "research/experiments/EXP-005/protocol.md": "5cb57c5b7af394ddf068022265c6116a4d2003b1148a08c962986828639655c4"
+  },
+  "binary_sha256": "340faad9df6f75de0245d4ad88f4fdbf51636f5a2f5c5adcad84ebf0a64217d1",
+  "build_command": [
+    "xcrun",
+    "clang++",
+    "-std=c++17",
+    "-O3",
+    "-DNDEBUG",
+    "-DACCELERATE_NEW_LAPACK",
+    "-mmacosx-version-min=15.0",
+    "-dynamiclib",
+    "-framework",
+    "Accelerate",
+    "/Users/sanjayelango/Desktop/github_repos/arm-sparse/cpp/ffn.cpp",
+    "-o",
+    "/Users/sanjayelango/Desktop/github_repos/arm-sparse/build/libffn.dylib"
+  ],
+  "hardware": {
+    "cpu": {
+      "unavailable": "sysctl: sysctl fmt -1 1024 1: Operation not permitted"
+    },
+    "memory_bytes": {
+      "unavailable": "sysctl: sysctl fmt -1 1024 1: Operation not permitted"
+    },
+    "os": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+    "arch": "arm64"
+  },
+  "python": "3.13.5 (v3.13.5:6cb20a219a8, Jun 11 2025, 12:23:45) [Clang 16.0.0 (clang-1600.0.26.6)]",
+  "threads": 1,
+  "dtype": "float32",
+  "shape": {
+    "hidden": 2048,
+    "intermediate": 8192,
+    "tokens": 1
+  },
+  "block_size": 8,
+  "target_sparsity": 0.1,
+  "warmups": 20,
+  "repeats": 200,
+  "runs": 3,
+  "mask_metadata": {
+    "experiment_id": "EXP-005",
+    "kind": "offline_replay_mask_bank",
+    "source_experiment": "EXP-002",
+    "score": "block_output_norm",
+    "block_size": 8,
+    "target_sparsity": 0.1,
+    "active_blocks_per_mask": 922,
+    "mask_count": 16,
+    "mask_bank": "/Users/sanjayelango/Desktop/github_repos/arm-sparse/research/data/EXP-005/b8-s10-output-norm-replay.npz",
+    "mask_bank_sha256": "9b971c2d2661203eec7bac26dfc7e3118813a131fc6ab3800f061c7f26d7614d",
+    "capture_manifest_sha256": "9e9a6ddfacf0d6f8404f1253d3ff55a8e0139af1138d36c03e6dfd066328665c",
+    "model_revision": "4e20de362430cd3b72f300e6b0f18e50e7166e08",
+    "sources": [
+      {
+        "capture": "P01-layer00.npz",
+        "capture_sha256": "3f6482b9e4fdaccfd6ed6a4cc52e5da76147f9a6240330d98514f316d5d4107a",
+        "prompt_id": "P01",
+        "layer": 0,
+        "token_offset_in_capture": 0
+      },
+      {
+        "capture": "P01-layer01.npz",
+        "capture_sha256": "66a56380a1a372169d85df5da6f69133c56ca2446bcaffeaa57cf37b31e3a4ed",
+        "prompt_id": "P01",
+        "layer": 1,
+        "token_offset_in_capture": 0
+      },
+      {
+        "capture": "P01-layer02.npz",
+        "capture_sha256": "01e6f26a57669e44d25cff3328a40ccb209f77d6d748f5eebd31654d2c8da371",
+        "prompt_id": "P01",
+        "layer": 2,
+        "token_offset_in_capture": 0
+      },
+      {
+        "capture": "P01-layer03.npz",
+        "capture_sha256": "f5da93e6d74b84f5c14b51bdc6acf36f3cea3c3a53e95140cb6e9bad0b1a4715",
+        "prompt_id": "P01",
+        "layer": 3,
+        "token_offset_in_capture": 0
+      },
+      {
+        "capture": "P01-layer04.npz",
+        "capture_sha256": "f993395c3b95fd90aeb1ae41e098d52d06f82a5ba490ec476f5d977826c37298",
+        "prompt_id": "P01",
+        "layer": 4,
+        "token_offset_in_capture": 0
+      },
+      {
+        "capture": "P01-layer05.npz",
+        "capture_sha256": "24740d8c6a21a1a0daecf6a6517ceb5809e94ca2cb703fbe6310cd792fc48928",
+        "prompt_id": "P01",
+        "layer": 5,
+        "token_offset_in_capture": 0
+      },
+      {
+        "capture": "P01-layer06.npz",
+        "capture_sha256": "45d61a9372e17474ebc1d52a1bfdcaa8d787e7dccec16c803bdb159a2165b329",
+        "prompt_id": "P01",
+        "layer": 6,
+        "token_offset_in_capture": 0
+      },
+      {
+        "capture": "P01-layer07.npz",
+        "capture_sha256": "4df08c2888f15ff558fd26c6699acc275142dda27d91bf26bad0b14822af8432",
+        "prompt_id": "P01",
+        "layer": 7,
+        "token_offset_in_capture": 0
+      },
+      {
+        "capture": "P01-layer08.npz",
+        "capture_sha256": "ac7331bec46206f0238d16695c38496b1bc92920d87200f0c0c1fc96dcee6688",
+        "prompt_id": "P01",
+        "layer": 8,
+        "token_offset_in_capture": 0
+      },
+      {
+        "capture": "P01-layer09.npz",
+        "capture_sha256": "e68a06e87d60d6273e0cf5c4522d0297d3ca4fd6e337ad42da397f7ad2926c22",
+        "prompt_id": "P01",
+        "layer": 9,
+        "token_offset_in_capture": 0
+      },
+      {
+        "capture": "P01-layer10.npz",
+        "capture_sha256": "62fd8967e6888ae731acaa4b6fe82af5948013b2b448d0b6e543ccadb75e6544",
+        "prompt_id": "P01",
+        "layer": 10,
+        "token_offset_in_capture": 0
+      },
+      {
+        "capture": "P01-layer11.npz",
+        "capture_sha256": "2928de60a41b134d4e9b34e68013143133946d9ca16280fd1ed699483c6a1ef0",
+        "prompt_id": "P01",
+        "layer": 11,
+        "token_offset_in_capture": 0
+      },
+      {
+        "capture": "P01-layer12.npz",
+        "capture_sha256": "b58b9926ba19bd4eb476075c32b0a6dadc1c5a657b9aab6b46e3ded3135bd31b",
+        "prompt_id": "P01",
+        "layer": 12,
+        "token_offset_in_capture": 0
+      },
+      {
+        "capture": "P01-layer13.npz",
+        "capture_sha256": "18926f3e5c6c94fd7decc05fa91907fd8898434874c6fe826a3855900f5a4b3d",
+        "prompt_id": "P01",
+        "layer": 13,
+        "token_offset_in_capture": 0
+      },
+      {
+        "capture": "P01-layer14.npz",
+        "capture_sha256": "164c7795f6b821594d5d54f93a95e58f27fb7c0ca9fd8fce36d785d9085ab545",
+        "prompt_id": "P01",
+        "layer": 14,
+        "token_offset_in_capture": 0
+      },
+      {
+        "capture": "P01-layer15.npz",
+        "capture_sha256": "699423d8bb15d5b2d84b4884f6367da9574a0486d4c8fca25709e693e12bc593",
+        "prompt_id": "P01",
+        "layer": 15,
+        "token_offset_in_capture": 0
+      }
+    ]
+  },
+  "case_artifacts": [
+    {
+      "path": "run1-B8-s10-replay.json",
+      "sha256": "b7437cca60692e41a7300e034f312cc6eaf6f00020303fcb35886c9da365b59d"
+    },
+    {
+      "path": "run2-B8-s10-replay.json",
+      "sha256": "ba3666e574df935c0c70d8335abddaf98833db78ebad2457e63a5e4c85e67583"
+    },
+    {
+      "path": "run3-B8-s10-replay.json",
+      "sha256": "1a1a9b196b8a70e7755c02c59c20ef18b84359df6df6bcd1c1cfa491f88a5588"
+    }
+  ],
+  "timing_scope": "standalone FFN executor including mask scan/branch; excludes mask selection and packing",
+  "completed_utc": "2026-09-09T16:31:42.933029+00:00"
+}

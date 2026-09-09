@@ -70,6 +70,10 @@ for B8/B16 quality screening. Its staged oracle run found that B8 at 10%
 sparsity met the 5% perplexity gate; B16/10% narrowly missed and all tested
 20–30% configurations failed.
 
+EXP-005 replayed the quality-compatible B8/10% masks through the standalone M2
+executor. The native block kernel was 37–39% slower than optimized dense in all
+three runs, so this configuration does not provide a speedup.
+
 ## Repository
 
 - `armsparse/`: Python reference kernels, masks and tested reference runtime.

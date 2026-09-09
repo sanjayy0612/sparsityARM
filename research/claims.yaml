@@ -100,3 +100,24 @@ claims:
         manifest: results/EXP-004/m2-oracle-screening-20260909/manifest.json
         conditions: [block_output_norm-B8-s20, block_output_norm-B8-s30, block_output_norm-B16-s10, block_output_norm-B16-s20, block_output_norm-B16-s30]
     limitation: Does not test intermediate sparsity, other block layouts, trained selectors, or a full evaluation corpus
+  - id: C010
+    type: quantitative_observation
+    status: verified
+    statement: With real B8 replay masks at 9.961% realized sparsity, the native packed-block FFN was 37.26% to 38.77% slower than optimized dense across three M2 runs.
+    scope: Apple M2, FP32, one thread, synthetic 2048/8192 SwiGLU weights and inputs, 16 real Llama-derived replay masks
+    evidence:
+      - experiment: EXP-005
+        manifest: results/EXP-005/m2-replay-20260909/manifest.json
+        cases: [run1-B8-s10-replay.json, run2-B8-s10-replay.json, run3-B8-s10-replay.json]
+    calculation: Per-run native block median divided by Accelerate dense median minus one
+    limitation: Portable standalone kernel; does not reject optimized assembly, quantization, reordering, other hardware, or end-to-end systems
+  - id: C011
+    type: quantitative_observation
+    status: verified
+    statement: At the same 9.961% replay sparsity, native irregular execution was only 0.93% to 3.51% faster than dense across three runs, versus an idealized 11.06% projection-only speedup.
+    scope: Same EXP-005 conditions as C010
+    evidence:
+      - experiment: EXP-005
+        manifest: results/EXP-005/m2-replay-20260909/manifest.json
+    calculation: Dense median divided by native irregular median minus one; idealized speedup is 1/(1-realized sparsity)-1
+    limitation: Dense and irregular use different layouts/backends; no hardware counters or significance test
