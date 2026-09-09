@@ -1,6 +1,6 @@
 # EXP-003 — Quality under activation-aware block masks
 
-Status: implementation complete; real run awaits protocol approval.
+Status: screening protocol approved 2026-09-09; run in progress.
 
 ## Question
 
@@ -30,16 +30,23 @@ Token-weighted causal cross-entropy and perplexity relative to the dense model.
 Per-record negative log-likelihood and token counts are retained so aggregation
 can be independently checked. Random controls use seed 17.
 
-## Required approval before the real run
+## Approved screening run
 
-The following are intentionally not chosen by implementation code:
+Before observing EXP-003 results, the human approved:
 
-1. corpus name, exact revision, and locally materialized JSONL file;
-2. evaluation record count and maximum tokens per record;
-3. maximum acceptable relative perplexity increase, fixed before observing runs.
+- official `Salesforce/wikitext` WikiText-2 raw test split, repository revision
+  `f776294184f13b8ff2337b3841cf9269a6216d1e`;
+- the first 16 non-heading test rows containing at least 128 Llama tokens;
+- truncation to at most 128 tokens per record;
+- 30% target sparsity;
+- dense, neuron top-k, B=8/16/32/64 direct-block masks, and corresponding
+  random-block controls;
+- at most 5% relative perplexity increase as the screening quality threshold.
 
-The runner requires this threshold explicitly and hashes the exact corpus. A
-small synthetic/toy preflight may verify mechanics but cannot support H5.
+The downloaded Parquet SHA-256 is
+`3ee89cd6a2ab912afd5d01e98867b46a67d9ec7a9eca0910e5e4c3cdd4cc1925`.
+The runner requires the threshold explicitly and hashes the materialized corpus.
+This small screening sample is directional and cannot alone establish H5 broadly.
 
 ## Interpretation gates
 
