@@ -24,7 +24,7 @@ import torch.nn.functional as F
 import transformers
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-from armsparse.sparsity.quality import MaskCondition, apply_activation_mask
+from armsparse.sparsity.quality import MaskCondition, apply_activation_mask, block_statistics
 
 ROOT = Path(__file__).resolve().parents[1]
 MODEL = "meta-llama/Llama-3.2-1B"
@@ -65,8 +65,12 @@ def masked_mlp(model, condition: MaskCondition):
     handles = []
     if condition.method != "dense":
         for layer, block in enumerate(model.model.layers):
-            def hook(module, inputs, layer=layer):
-                return (apply_activation_mask(inputs[0], condition, layer), *inputs[1:])
+            statistics = (block_statistics(block.mlp.down_proj.weight, condition.block_size,
+                                           condition.method)
+                          if condition.method in {"block_weight_proxy", "block_output_norm"}
+                          else None)
+            def hook(module, inputs, layer=layer, statistics=statistics):
+                return (apply_activation_mask(inputs[0], condition, layer, statistics), *inputs[1:])
             handles.append(block.mlp.down_proj.register_forward_pre_hook(hook))
     try:
         yield
@@ -110,11 +114,11 @@ def parse_condition(value: str) -> MaskCondition:
     try:
         if parts[0] == "neuron" and len(parts) == 2:
             return MaskCondition("neuron", float(parts[1]))
-        if parts[0] in {"block", "random_block"} and len(parts) == 3:
+        if parts[0] in {"block", "block_weight_proxy", "block_output_norm", "random_block"} and len(parts) == 3:
             return MaskCondition(parts[0], float(parts[2]), int(parts[1]))
     except ValueError as exc:
         raise argparse.ArgumentTypeError(str(exc)) from exc
-    raise argparse.ArgumentTypeError("use dense, neuron:0.2, block:8:0.2, or random_block:8:0.2")
+    raise argparse.ArgumentTypeError("use dense, neuron:0.2, or METHOD:BLOCK_SIZE:SPARSITY")
 
 
 def main():

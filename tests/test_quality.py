@@ -1,7 +1,8 @@
 import pytest
 import torch
 
-from armsparse.sparsity.quality import MaskCondition, activation_mask, apply_activation_mask
+from armsparse.sparsity.quality import (MaskCondition, activation_mask, apply_activation_mask,
+                                       block_scores, block_statistics)
 
 
 def test_neuron_mask_keeps_largest_magnitudes_exactly():
@@ -36,3 +37,25 @@ def test_random_control_is_reproducible_and_layer_specific():
 def test_invalid_block_geometry_is_rejected():
     with pytest.raises(ValueError, match="divisible"):
         activation_mask(torch.ones(1, 10), MaskCondition("block", 0.2, 4))
+
+
+def test_output_norm_score_equals_explicit_block_contribution_norm():
+    activation = torch.tensor([[2.0, -1.0, 3.0, 4.0]])
+    weight = torch.tensor([[1.0, 2.0, -1.0, 0.0], [0.0, 3.0, 2.0, 1.0],
+                           [2.0, -2.0, 0.0, 4.0]])
+    condition = MaskCondition("block_output_norm", 0.5, 2)
+    gram = block_statistics(weight, 2, condition.method)
+    scores = block_scores(activation, condition, gram)
+    explicit = torch.stack([
+        torch.linalg.vector_norm(weight[:, :2] @ activation[0, :2]),
+        torch.linalg.vector_norm(weight[:, 2:] @ activation[0, 2:]),
+    ]).square()
+    assert torch.allclose(scores[0], explicit)
+
+
+def test_weight_proxy_combines_activation_and_weight_energy():
+    activation = torch.tensor([[3.0, 4.0, 1.0, 0.0]])
+    weight = torch.tensor([[1.0, 0.0, 6.0, 8.0]])
+    condition = MaskCondition("block_weight_proxy", 0.5, 2)
+    statistics = block_statistics(weight, 2, condition.method)
+    assert torch.allclose(block_scores(activation, condition, statistics), torch.tensor([[5.0, 10.0]]))

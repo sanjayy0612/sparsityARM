@@ -65,6 +65,10 @@ not. Hypotheses and evidence-backed observations are tracked
 in [research state](research/project.yaml), [hypotheses](research/hypotheses.yaml)
 and [claims](research/claims.yaml).
 
+EXP-004 implements weight-aware and isolated output-contribution block scores
+for B8/B16 quality screening. Its proposed 10/20/30% grid is documented but has
+not yet been run.
+
 ## Repository
 
 - `armsparse/`: Python reference kernels, masks and tested reference runtime.

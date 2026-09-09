@@ -42,9 +42,27 @@ def test_mask_hook_changes_output_and_is_removed():
     assert torch.equal(dense, restored)
 
 
+@pytest.mark.parametrize("method", ["block_weight_proxy", "block_output_norm"])
+def test_contribution_aware_hook_runs_and_is_removed(method):
+    module = _module()
+    torch.manual_seed(17)
+    model = LlamaForCausalLM(LlamaConfig(vocab_size=64, hidden_size=32,
+        intermediate_size=64, num_hidden_layers=2, num_attention_heads=4,
+        num_key_value_heads=2, attention_dropout=0)).eval()
+    ids = torch.tensor([[1, 2, 3, 4]])
+    dense = model(ids, use_cache=False).logits
+    with module.masked_mlp(model, MaskCondition(method, 0.5, 8)):
+        sparse = model(ids, use_cache=False).logits
+    assert not torch.equal(dense, sparse)
+    assert torch.equal(dense, model(ids, use_cache=False).logits)
+
+
 def test_condition_parser():
     module = _module()
     assert module.parse_condition("dense") == MaskCondition("dense", 0)
     assert module.parse_condition("block:32:0.4") == MaskCondition("block", 0.4, 32)
+    assert module.parse_condition("block_output_norm:8:0.1") == MaskCondition(
+        "block_output_norm", 0.1, 8
+    )
     with pytest.raises(Exception):
         module.parse_condition("bad")
