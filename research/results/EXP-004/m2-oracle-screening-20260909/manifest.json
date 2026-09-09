@@ -1,0 +1,740 @@
+{
+  "experiment_id": "EXP-004",
+  "status": "completed",
+  "started_utc": "2026-09-09T14:44:32.915955+00:00",
+  "model": "meta-llama/Llama-3.2-1B",
+  "model_revision": "4e20de362430cd3b72f300e6b0f18e50e7166e08",
+  "snapshot": "/Users/sanjayelango/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B/snapshots/4e20de362430cd3b72f300e6b0f18e50e7166e08",
+  "model_file_sha256": {
+    "LICENSE.txt": "0b4284c1f87029e67654c7953afa16279961632cf73dcfe33374c4c2f298fa35",
+    "USE_POLICY.md": "40e2777d7faa6beaf98400654170f414d8ab29b921b5163ad4ea0a1d39894201",
+    "config.json": "bfb5d39c327ee5c3a65e3574596ff30b052a445cfc59a25bdf3b4c0c5a44f4d2",
+    "generation_config.json": "da81b0dd4001a8e19fb5840d2b524f6957f44ddde6f5c3fe32b1f36cef5205bf",
+    "model.safetensors": "68a2e4be76fa709455a60272fba8e512c02d81c46e6c671cc9449e374fd6809a",
+    "special_tokens_map.json": "cc2e013b7545f183ef03e079a3c91c6f364fa37e4068c512d7dd843e59024535",
+    "tokenizer.json": "79e3e522635f3171300913bb421464a87de6222182a0570b9b2ccba2a964b2b4",
+    "tokenizer_config.json": "8004530facf809ac432114de2a4dcc65fcb632da5ec16d666091aeb6a2ee444a"
+  },
+  "source_sha256": {
+    "benchmarks/run_exp004.py": "f016ce51c458e7c847d4c76346a79e22902705e0c32be7cd401207dda963d8c8",
+    "benchmarks/run_exp003.py": "50aa5473b85a0587715f6585f1e4f6962bb4aa67bc1a800742f601f2ddf61adf",
+    "armsparse/sparsity/quality.py": "6d4e45df9db8705f647b8b14dc91fab7b5f8618463fb6b8c8818c0dfcae85c86",
+    "research/experiments/EXP-004/protocol.md": "96babce480d58850afcc99d635ed1d86f01dc178bf8fe4b1f2604b12cfaacac9"
+  },
+  "corpus": "/Users/sanjayelango/Desktop/github_repos/arm-sparse/research/data/EXP-003/wikitext-2-test-16x128.jsonl",
+  "corpus_sha256": "b7a3354175fecf0950e342b8dd2a73973d752e5c7f732af585e7ff10470b852f",
+  "record_ids": [
+    "wikitext2-test-row-3",
+    "wikitext2-test-row-4",
+    "wikitext2-test-row-11",
+    "wikitext2-test-row-12",
+    "wikitext2-test-row-16",
+    "wikitext2-test-row-17",
+    "wikitext2-test-row-39",
+    "wikitext2-test-row-46",
+    "wikitext2-test-row-48",
+    "wikitext2-test-row-49",
+    "wikitext2-test-row-54",
+    "wikitext2-test-row-57",
+    "wikitext2-test-row-63",
+    "wikitext2-test-row-67",
+    "wikitext2-test-row-89",
+    "wikitext2-test-row-98"
+  ],
+  "max_tokens_per_record": 128,
+  "conditions": [
+    "dense",
+    "block_output_norm-B8-s10",
+    "block_output_norm-B8-s20",
+    "block_output_norm-B8-s30",
+    "block_output_norm-B16-s10",
+    "block_output_norm-B16-s20",
+    "block_output_norm-B16-s30"
+  ],
+  "approved_max_relative_ppl_increase": 0.05,
+  "score_semantics": {
+    "block": "sum(abs(post-SwiGLU activation))",
+    "block_weight_proxy": "L2(activation block) * Frobenius(down-weight block)",
+    "block_output_norm": "squared L2 norm of each block's isolated down-projection contribution"
+  },
+  "caveat": "scores inspect post-SwiGLU activations; output_norm ranks isolated blocks and is not the combinatorial optimum",
+  "timing_scope": "operational evaluation duration; must not be reported as inference latency",
+  "git_commit": "849df027e2c61eeee410a8d55c48ae855eca7d0a",
+  "git_status": "",
+  "hardware": {
+    "cpu": {
+      "unavailable": "sysctl: sysctl fmt -1 1024 1: Operation not permitted"
+    },
+    "memory_bytes": 8589934592,
+    "os": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+    "arch": "arm64"
+  },
+  "software": {
+    "python": "3.13.5 (v3.13.5:6cb20a219a8, Jun 11 2025, 12:23:45) [Clang 16.0.0 (clang-1600.0.26.6)]",
+    "torch": "2.13.0",
+    "transformers": "5.15.0"
+  },
+  "dtype": "bfloat16",
+  "score_dtype": "float32",
+  "device": "cpu",
+  "threads": 1,
+  "results": [
+    {
+      "condition": "dense",
+      "method": "dense",
+      "sparsity": 0,
+      "block_size": null,
+      "predicted_tokens": 2032,
+      "mean_nll": 3.125628719179649,
+      "perplexity": 22.77420917539622,
+      "evaluation_seconds": 288.2703535830078,
+      "examples": [
+        {
+          "id": "wikitext2-test-row-3",
+          "predicted_tokens": 127,
+          "nll": 304.7542724609375
+        },
+        {
+          "id": "wikitext2-test-row-4",
+          "predicted_tokens": 127,
+          "nll": 326.9175720214844
+        },
+        {
+          "id": "wikitext2-test-row-11",
+          "predicted_tokens": 127,
+          "nll": 380.92474365234375
+        },
+        {
+          "id": "wikitext2-test-row-12",
+          "predicted_tokens": 127,
+          "nll": 366.3356018066406
+        },
+        {
+          "id": "wikitext2-test-row-16",
+          "predicted_tokens": 127,
+          "nll": 408.6133728027344
+        },
+        {
+          "id": "wikitext2-test-row-17",
+          "predicted_tokens": 127,
+          "nll": 443.1286926269531
+        },
+        {
+          "id": "wikitext2-test-row-39",
+          "predicted_tokens": 127,
+          "nll": 445.36236572265625
+        },
+        {
+          "id": "wikitext2-test-row-46",
+          "predicted_tokens": 127,
+          "nll": 402.29754638671875
+        },
+        {
+          "id": "wikitext2-test-row-48",
+          "predicted_tokens": 127,
+          "nll": 432.0313720703125
+        },
+        {
+          "id": "wikitext2-test-row-49",
+          "predicted_tokens": 127,
+          "nll": 371.5690002441406
+        },
+        {
+          "id": "wikitext2-test-row-54",
+          "predicted_tokens": 127,
+          "nll": 421.0979919433594
+        },
+        {
+          "id": "wikitext2-test-row-57",
+          "predicted_tokens": 127,
+          "nll": 406.8001708984375
+        },
+        {
+          "id": "wikitext2-test-row-63",
+          "predicted_tokens": 127,
+          "nll": 407.60150146484375
+        },
+        {
+          "id": "wikitext2-test-row-67",
+          "predicted_tokens": 127,
+          "nll": 384.8673095703125
+        },
+        {
+          "id": "wikitext2-test-row-89",
+          "predicted_tokens": 127,
+          "nll": 450.3462829589844
+        },
+        {
+          "id": "wikitext2-test-row-98",
+          "predicted_tokens": 127,
+          "nll": 398.6297607421875
+        }
+      ]
+    },
+    {
+      "condition": "block_output_norm-B8-s10",
+      "method": "block_output_norm",
+      "sparsity": 0.1,
+      "block_size": 8,
+      "predicted_tokens": 2032,
+      "mean_nll": 3.1505167653241495,
+      "perplexity": 23.34812696636308,
+      "evaluation_seconds": 294.98755175000406,
+      "examples": [
+        {
+          "id": "wikitext2-test-row-3",
+          "predicted_tokens": 127,
+          "nll": 306.2557678222656
+        },
+        {
+          "id": "wikitext2-test-row-4",
+          "predicted_tokens": 127,
+          "nll": 343.89300537109375
+        },
+        {
+          "id": "wikitext2-test-row-11",
+          "predicted_tokens": 127,
+          "nll": 378.1424865722656
+        },
+        {
+          "id": "wikitext2-test-row-12",
+          "predicted_tokens": 127,
+          "nll": 375.0106506347656
+        },
+        {
+          "id": "wikitext2-test-row-16",
+          "predicted_tokens": 127,
+          "nll": 407.9067077636719
+        },
+        {
+          "id": "wikitext2-test-row-17",
+          "predicted_tokens": 127,
+          "nll": 446.05145263671875
+        },
+        {
+          "id": "wikitext2-test-row-39",
+          "predicted_tokens": 127,
+          "nll": 444.8211975097656
+        },
+        {
+          "id": "wikitext2-test-row-46",
+          "predicted_tokens": 127,
+          "nll": 408.0661315917969
+        },
+        {
+          "id": "wikitext2-test-row-48",
+          "predicted_tokens": 127,
+          "nll": 430.6324462890625
+        },
+        {
+          "id": "wikitext2-test-row-49",
+          "predicted_tokens": 127,
+          "nll": 372.04364013671875
+        },
+        {
+          "id": "wikitext2-test-row-54",
+          "predicted_tokens": 127,
+          "nll": 429.76953125
+        },
+        {
+          "id": "wikitext2-test-row-57",
+          "predicted_tokens": 127,
+          "nll": 409.8165588378906
+        },
+        {
+          "id": "wikitext2-test-row-63",
+          "predicted_tokens": 127,
+          "nll": 412.8965759277344
+        },
+        {
+          "id": "wikitext2-test-row-67",
+          "predicted_tokens": 127,
+          "nll": 385.9892883300781
+        },
+        {
+          "id": "wikitext2-test-row-89",
+          "predicted_tokens": 127,
+          "nll": 448.9443054199219
+        },
+        {
+          "id": "wikitext2-test-row-98",
+          "predicted_tokens": 127,
+          "nll": 401.6103210449219
+        }
+      ],
+      "relative_ppl_increase": 0.0252003389688229,
+      "within_approved_threshold": true
+    },
+    {
+      "condition": "block_output_norm-B8-s20",
+      "method": "block_output_norm",
+      "sparsity": 0.2,
+      "block_size": 8,
+      "predicted_tokens": 2032,
+      "mean_nll": 3.2097180584284266,
+      "perplexity": 24.77210095484062,
+      "evaluation_seconds": 290.2626043749915,
+      "examples": [
+        {
+          "id": "wikitext2-test-row-3",
+          "predicted_tokens": 127,
+          "nll": 311.9531555175781
+        },
+        {
+          "id": "wikitext2-test-row-4",
+          "predicted_tokens": 127,
+          "nll": 358.6302490234375
+        },
+        {
+          "id": "wikitext2-test-row-11",
+          "predicted_tokens": 127,
+          "nll": 387.5907287597656
+        },
+        {
+          "id": "wikitext2-test-row-12",
+          "predicted_tokens": 127,
+          "nll": 392.1663818359375
+        },
+        {
+          "id": "wikitext2-test-row-16",
+          "predicted_tokens": 127,
+          "nll": 419.5836181640625
+        },
+        {
+          "id": "wikitext2-test-row-17",
+          "predicted_tokens": 127,
+          "nll": 456.0429382324219
+        },
+        {
+          "id": "wikitext2-test-row-39",
+          "predicted_tokens": 127,
+          "nll": 451.8607482910156
+        },
+        {
+          "id": "wikitext2-test-row-46",
+          "predicted_tokens": 127,
+          "nll": 408.9056091308594
+        },
+        {
+          "id": "wikitext2-test-row-48",
+          "predicted_tokens": 127,
+          "nll": 436.96246337890625
+        },
+        {
+          "id": "wikitext2-test-row-49",
+          "predicted_tokens": 127,
+          "nll": 377.50030517578125
+        },
+        {
+          "id": "wikitext2-test-row-54",
+          "predicted_tokens": 127,
+          "nll": 444.1598815917969
+        },
+        {
+          "id": "wikitext2-test-row-57",
+          "predicted_tokens": 127,
+          "nll": 411.53411865234375
+        },
+        {
+          "id": "wikitext2-test-row-63",
+          "predicted_tokens": 127,
+          "nll": 418.0642395019531
+        },
+        {
+          "id": "wikitext2-test-row-67",
+          "predicted_tokens": 127,
+          "nll": 386.40203857421875
+        },
+        {
+          "id": "wikitext2-test-row-89",
+          "predicted_tokens": 127,
+          "nll": 452.95123291015625
+        },
+        {
+          "id": "wikitext2-test-row-98",
+          "predicted_tokens": 127,
+          "nll": 407.8393859863281
+        }
+      ],
+      "relative_ppl_increase": 0.08772606609773281,
+      "within_approved_threshold": false
+    },
+    {
+      "condition": "block_output_norm-B8-s30",
+      "method": "block_output_norm",
+      "sparsity": 0.3,
+      "block_size": 8,
+      "predicted_tokens": 2032,
+      "mean_nll": 3.309350051279143,
+      "perplexity": 27.36733232757431,
+      "evaluation_seconds": 286.870488207991,
+      "examples": [
+        {
+          "id": "wikitext2-test-row-3",
+          "predicted_tokens": 127,
+          "nll": 336.8136291503906
+        },
+        {
+          "id": "wikitext2-test-row-4",
+          "predicted_tokens": 127,
+          "nll": 375.1155090332031
+        },
+        {
+          "id": "wikitext2-test-row-11",
+          "predicted_tokens": 127,
+          "nll": 402.4120788574219
+        },
+        {
+          "id": "wikitext2-test-row-12",
+          "predicted_tokens": 127,
+          "nll": 422.7165832519531
+        },
+        {
+          "id": "wikitext2-test-row-16",
+          "predicted_tokens": 127,
+          "nll": 438.13238525390625
+        },
+        {
+          "id": "wikitext2-test-row-17",
+          "predicted_tokens": 127,
+          "nll": 466.8125915527344
+        },
+        {
+          "id": "wikitext2-test-row-39",
+          "predicted_tokens": 127,
+          "nll": 462.2781066894531
+        },
+        {
+          "id": "wikitext2-test-row-46",
+          "predicted_tokens": 127,
+          "nll": 414.8199768066406
+        },
+        {
+          "id": "wikitext2-test-row-48",
+          "predicted_tokens": 127,
+          "nll": 446.70196533203125
+        },
+        {
+          "id": "wikitext2-test-row-49",
+          "predicted_tokens": 127,
+          "nll": 381.3553161621094
+        },
+        {
+          "id": "wikitext2-test-row-54",
+          "predicted_tokens": 127,
+          "nll": 457.13458251953125
+        },
+        {
+          "id": "wikitext2-test-row-57",
+          "predicted_tokens": 127,
+          "nll": 421.78399658203125
+        },
+        {
+          "id": "wikitext2-test-row-63",
+          "predicted_tokens": 127,
+          "nll": 424.5521240234375
+        },
+        {
+          "id": "wikitext2-test-row-67",
+          "predicted_tokens": 127,
+          "nll": 393.0791931152344
+        },
+        {
+          "id": "wikitext2-test-row-89",
+          "predicted_tokens": 127,
+          "nll": 463.8450927734375
+        },
+        {
+          "id": "wikitext2-test-row-98",
+          "predicted_tokens": 127,
+          "nll": 417.0461730957031
+        }
+      ],
+      "relative_ppl_increase": 0.2016809065379186,
+      "within_approved_threshold": false
+    },
+    {
+      "condition": "block_output_norm-B16-s10",
+      "method": "block_output_norm",
+      "sparsity": 0.1,
+      "block_size": 16,
+      "predicted_tokens": 2032,
+      "mean_nll": 3.1759099284494954,
+      "perplexity": 23.948601470826315,
+      "evaluation_seconds": 285.0313341670262,
+      "examples": [
+        {
+          "id": "wikitext2-test-row-3",
+          "predicted_tokens": 127,
+          "nll": 304.66259765625
+        },
+        {
+          "id": "wikitext2-test-row-4",
+          "predicted_tokens": 127,
+          "nll": 353.83380126953125
+        },
+        {
+          "id": "wikitext2-test-row-11",
+          "predicted_tokens": 127,
+          "nll": 378.7093505859375
+        },
+        {
+          "id": "wikitext2-test-row-12",
+          "predicted_tokens": 127,
+          "nll": 380.8535461425781
+        },
+        {
+          "id": "wikitext2-test-row-16",
+          "predicted_tokens": 127,
+          "nll": 413.391845703125
+        },
+        {
+          "id": "wikitext2-test-row-17",
+          "predicted_tokens": 127,
+          "nll": 455.2439880371094
+        },
+        {
+          "id": "wikitext2-test-row-39",
+          "predicted_tokens": 127,
+          "nll": 448.02337646484375
+        },
+        {
+          "id": "wikitext2-test-row-46",
+          "predicted_tokens": 127,
+          "nll": 405.6124267578125
+        },
+        {
+          "id": "wikitext2-test-row-48",
+          "predicted_tokens": 127,
+          "nll": 431.2801818847656
+        },
+        {
+          "id": "wikitext2-test-row-49",
+          "predicted_tokens": 127,
+          "nll": 372.5262145996094
+        },
+        {
+          "id": "wikitext2-test-row-54",
+          "predicted_tokens": 127,
+          "nll": 441.91741943359375
+        },
+        {
+          "id": "wikitext2-test-row-57",
+          "predicted_tokens": 127,
+          "nll": 416.0920104980469
+        },
+        {
+          "id": "wikitext2-test-row-63",
+          "predicted_tokens": 127,
+          "nll": 406.15081787109375
+        },
+        {
+          "id": "wikitext2-test-row-67",
+          "predicted_tokens": 127,
+          "nll": 388.64471435546875
+        },
+        {
+          "id": "wikitext2-test-row-89",
+          "predicted_tokens": 127,
+          "nll": 457.5604553222656
+        },
+        {
+          "id": "wikitext2-test-row-98",
+          "predicted_tokens": 127,
+          "nll": 398.94622802734375
+        }
+      ],
+      "relative_ppl_increase": 0.05156676512389424,
+      "within_approved_threshold": false
+    },
+    {
+      "condition": "block_output_norm-B16-s20",
+      "method": "block_output_norm",
+      "sparsity": 0.2,
+      "block_size": 16,
+      "predicted_tokens": 2032,
+      "mean_nll": 3.2829749189962554,
+      "perplexity": 26.654951187317103,
+      "evaluation_seconds": 289.421780707984,
+      "examples": [
+        {
+          "id": "wikitext2-test-row-3",
+          "predicted_tokens": 127,
+          "nll": 327.306640625
+        },
+        {
+          "id": "wikitext2-test-row-4",
+          "predicted_tokens": 127,
+          "nll": 374.396484375
+        },
+        {
+          "id": "wikitext2-test-row-11",
+          "predicted_tokens": 127,
+          "nll": 403.37164306640625
+        },
+        {
+          "id": "wikitext2-test-row-12",
+          "predicted_tokens": 127,
+          "nll": 401.0923767089844
+        },
+        {
+          "id": "wikitext2-test-row-16",
+          "predicted_tokens": 127,
+          "nll": 428.75341796875
+        },
+        {
+          "id": "wikitext2-test-row-17",
+          "predicted_tokens": 127,
+          "nll": 469.9928283691406
+        },
+        {
+          "id": "wikitext2-test-row-39",
+          "predicted_tokens": 127,
+          "nll": 462.9233703613281
+        },
+        {
+          "id": "wikitext2-test-row-46",
+          "predicted_tokens": 127,
+          "nll": 411.53619384765625
+        },
+        {
+          "id": "wikitext2-test-row-48",
+          "predicted_tokens": 127,
+          "nll": 443.8224182128906
+        },
+        {
+          "id": "wikitext2-test-row-49",
+          "predicted_tokens": 127,
+          "nll": 373.74603271484375
+        },
+        {
+          "id": "wikitext2-test-row-54",
+          "predicted_tokens": 127,
+          "nll": 462.3540954589844
+        },
+        {
+          "id": "wikitext2-test-row-57",
+          "predicted_tokens": 127,
+          "nll": 419.88714599609375
+        },
+        {
+          "id": "wikitext2-test-row-63",
+          "predicted_tokens": 127,
+          "nll": 413.8913269042969
+        },
+        {
+          "id": "wikitext2-test-row-67",
+          "predicted_tokens": 127,
+          "nll": 402.0788269042969
+        },
+        {
+          "id": "wikitext2-test-row-89",
+          "predicted_tokens": 127,
+          "nll": 469.895751953125
+        },
+        {
+          "id": "wikitext2-test-row-98",
+          "predicted_tokens": 127,
+          "nll": 405.95648193359375
+        }
+      ],
+      "relative_ppl_increase": 0.17040073629047825,
+      "within_approved_threshold": false
+    },
+    {
+      "condition": "block_output_norm-B16-s30",
+      "method": "block_output_norm",
+      "sparsity": 0.3,
+      "block_size": 16,
+      "predicted_tokens": 2032,
+      "mean_nll": 3.456442314808763,
+      "perplexity": 31.703982845624267,
+      "evaluation_seconds": 296.693878332997,
+      "examples": [
+        {
+          "id": "wikitext2-test-row-3",
+          "predicted_tokens": 127,
+          "nll": 353.80816650390625
+        },
+        {
+          "id": "wikitext2-test-row-4",
+          "predicted_tokens": 127,
+          "nll": 416.93975830078125
+        },
+        {
+          "id": "wikitext2-test-row-11",
+          "predicted_tokens": 127,
+          "nll": 424.0461120605469
+        },
+        {
+          "id": "wikitext2-test-row-12",
+          "predicted_tokens": 127,
+          "nll": 444.0106506347656
+        },
+        {
+          "id": "wikitext2-test-row-16",
+          "predicted_tokens": 127,
+          "nll": 464.2228088378906
+        },
+        {
+          "id": "wikitext2-test-row-17",
+          "predicted_tokens": 127,
+          "nll": 482.9386291503906
+        },
+        {
+          "id": "wikitext2-test-row-39",
+          "predicted_tokens": 127,
+          "nll": 477.5223693847656
+        },
+        {
+          "id": "wikitext2-test-row-46",
+          "predicted_tokens": 127,
+          "nll": 434.73699951171875
+        },
+        {
+          "id": "wikitext2-test-row-48",
+          "predicted_tokens": 127,
+          "nll": 447.6268615722656
+        },
+        {
+          "id": "wikitext2-test-row-49",
+          "predicted_tokens": 127,
+          "nll": 393.9967041015625
+        },
+        {
+          "id": "wikitext2-test-row-54",
+          "predicted_tokens": 127,
+          "nll": 486.3359375
+        },
+        {
+          "id": "wikitext2-test-row-57",
+          "predicted_tokens": 127,
+          "nll": 447.8799743652344
+        },
+        {
+          "id": "wikitext2-test-row-63",
+          "predicted_tokens": 127,
+          "nll": 421.3931884765625
+        },
+        {
+          "id": "wikitext2-test-row-67",
+          "predicted_tokens": 127,
+          "nll": 414.3516540527344
+        },
+        {
+          "id": "wikitext2-test-row-89",
+          "predicted_tokens": 127,
+          "nll": 487.3830871582031
+        },
+        {
+          "id": "wikitext2-test-row-98",
+          "predicted_tokens": 127,
+          "nll": 426.2978820800781
+        }
+      ],
+      "relative_ppl_increase": 0.39210027454543606,
+      "within_approved_threshold": false
+    }
+  ],
+  "completed_utc": "2026-09-09T15:18:27.685250+00:00"
+}

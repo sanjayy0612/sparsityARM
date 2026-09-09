@@ -80,3 +80,23 @@ claims:
         manifest: results/EXP-003/m2-screening-20260909/manifest.json
         conditions: [block-B8-s30, block-B16-s30, block-B32-s30, block-B64-s30]
     limitation: One sparsity level and one block-scoring rule on a small corpus; does not reject lower sparsity, contribution-aware scoring, learned selection, or neuron reordering
+  - id: C008
+    type: quantitative_observation
+    status: verified
+    statement: Output-norm-ranked B8 masks at 10% block sparsity increased screening perplexity from 22.7742 to 23.3481, a 2.520% increase that met the preregistered 5% gate.
+    scope: Pinned Llama 3.2 1B, CPU BF16, 16 deterministic WikiText-2 raw test excerpts, 2032 predicted tokens
+    evidence:
+      - experiment: EXP-004
+        manifest: results/EXP-004/m2-oracle-screening-20260909/manifest.json
+        condition: block_output_norm-B8-s10
+    limitation: Small-corpus post-SwiGLU oracle screening; not deployable selection, broad quality validation, or speed evidence
+  - id: C009
+    type: quantitative_observation
+    status: verified
+    statement: In the same output-norm screening, B8 at 20% and 30% and B16 at 10%, 20%, and 30% all exceeded the preregistered 5% relative perplexity threshold.
+    scope: Same EXP-004 screening corpus and model as C008
+    evidence:
+      - experiment: EXP-004
+        manifest: results/EXP-004/m2-oracle-screening-20260909/manifest.json
+        conditions: [block_output_norm-B8-s20, block_output_norm-B8-s30, block_output_norm-B16-s10, block_output_norm-B16-s20, block_output_norm-B16-s30]
+    limitation: Does not test intermediate sparsity, other block layouts, trained selectors, or a full evaluation corpus

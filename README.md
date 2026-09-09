@@ -66,8 +66,9 @@ in [research state](research/project.yaml), [hypotheses](research/hypotheses.yam
 and [claims](research/claims.yaml).
 
 EXP-004 implements weight-aware and isolated output-contribution block scores
-for B8/B16 quality screening. Its proposed 10/20/30% grid is documented but has
-not yet been run.
+for B8/B16 quality screening. Its staged oracle run found that B8 at 10%
+sparsity met the 5% perplexity gate; B16/10% narrowly missed and all tested
+20–30% configurations failed.
 
 ## Repository
 

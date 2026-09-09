@@ -1,6 +1,6 @@
 # EXP-004 — Contribution-aware block selection
 
-Status: staged oracle screening grid approved 2026-09-09; run in progress.
+Status: staged oracle screening completed and independently validated 2026-09-09.
 
 ## Question
 
