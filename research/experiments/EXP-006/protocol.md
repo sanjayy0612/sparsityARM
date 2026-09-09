@@ -1,6 +1,6 @@
 # EXP-006 — Coactivation-aware neuron reordering
 
-Status: layout and held-out quality implementation complete; proposed grid awaits human approval.
+Status: held-out B8/B16/B32 at 20/30% approved 2026-09-09; run in progress.
 
 ## Question
 
@@ -25,7 +25,7 @@ Reorder `gate_proj` rows, `up_proj` rows, and `down_proj` columns by the same
 permutation. Dense FFN output must remain numerically identical before any
 sparsity is introduced.
 
-## Proposed held-out screen
+## Approved held-out screen
 
 - Pinned Llama 3.2 1B, CPU BF16, the same 16×128-token WikiText-2 screen.
 - Output-contribution block scoring on the reordered layout.
