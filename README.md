@@ -74,6 +74,10 @@ EXP-005 replayed the quality-compatible B8/10% masks through the standalone M2
 executor. The native block kernel was 37–39% slower than optimized dense in all
 three runs, so this configuration does not provide a speedup.
 
+EXP-006 implements fixed per-layer neuron reordering learned only from EXP-002
+calibration activations. The deterministic hierarchical layout is ready for a
+held-out B8/B16/B32 quality screen at 20–30% sparsity; it has not yet been run.
+
 ## Repository
 
 - `armsparse/`: Python reference kernels, masks and tested reference runtime.
