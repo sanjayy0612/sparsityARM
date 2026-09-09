@@ -59,7 +59,9 @@ EXP-002 found that exact expansion of Llama 3.2 1B neuron top-k masks
 erases essentially all sparsity at B=8–64. The next decision is a quality
 protocol for direct block-aware masks. The EXP-003 implementation compares
 dense, neuron top-k, block top-k and random-block controls, but it is not a
-speed benchmark. Hypotheses and evidence-backed observations are tracked
+speed benchmark. Its first 30%-sparsity screening run found that neuron top-k
+met the 5% perplexity gate, while B8/B16/B32/B64 activation-sum block masks did
+not. Hypotheses and evidence-backed observations are tracked
 in [research state](research/project.yaml), [hypotheses](research/hypotheses.yaml)
 and [claims](research/claims.yaml).
 

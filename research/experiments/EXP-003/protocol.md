@@ -1,6 +1,6 @@
 # EXP-003 — Quality under activation-aware block masks
 
-Status: screening protocol approved 2026-09-09; run in progress.
+Status: screening run completed and independently validated 2026-09-09.
 
 ## Question
 
