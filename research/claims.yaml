@@ -167,3 +167,13 @@ claims:
         manifest: results/EXP-009/m2-b8-profile-20260910/manifest.json
     calculation: Per-run medians recomputed from 800 retained invocations per timing field
     limitation: Phase timings describe the staged diagnostic rather than the original interleaved kernel exactly; no hardware counters and no end-to-end inference
+  - id: C016
+    type: quantitative_observation
+    status: verified
+    statement: The explicit NEON B8 kernel was 3.60-6.70% slower than the existing native B8 kernel and 33.17-36.18% slower than Accelerate dense across three replay runs.
+    scope: Apple M2, FP32, one thread, synthetic 2048/8192 SwiGLU, 16 real-model B8 masks at 9.961% realized sparsity
+    evidence:
+      - experiment: EXP-010
+        manifest: results/EXP-010/m2-neon-b8-20260910/manifest.json
+    calculation: Comparisons of per-run medians recomputed from 3200 retained timings per implementation
+    limitation: One direct intrinsic implementation; does not reject other SIMD schedules, quantization, run coalescing, generated microkernels, or other ARM CPUs
