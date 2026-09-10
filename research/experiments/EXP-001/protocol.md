@@ -42,7 +42,7 @@ Completion means: native correctness passes; all planned cases are retained; pro
 ```bash
 .venv/bin/python -m pytest -q
 .venv/bin/python benchmarks/run_exp001.py
-.venv/bin/python astra/validate_exp001.py research/results/EXP-001/<run-directory>
+.venv/bin/python research_tools/validate_exp001.py research/results/EXP-001/<run-directory>
 ```
 
 Smoke tests may override shape, sample count and run count. They must remain labeled by their manifest configuration and cannot replace the primary sweep.

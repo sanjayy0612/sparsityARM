@@ -61,8 +61,8 @@ pinned official checkpoint/config/tokenizer files using Hugging Face, then:
 
 ```bash
 .venv/bin/python benchmarks/capture_exp002.py --snapshot <pinned-snapshot-directory> --output research/results/EXP-002/<new-run-directory>
-.venv/bin/python astra/analyze_exp002.py research/results/EXP-002/<new-run-directory>
-.venv/bin/python astra/validate_exp002.py research/results/EXP-002/<new-run-directory>
+.venv/bin/python research_tools/analyze_exp002.py research/results/EXP-002/<new-run-directory>
+.venv/bin/python research_tools/validate_exp002.py research/results/EXP-002/<new-run-directory>
 ```
 
 Both capture and analysis refuse to overwrite existing output directories.

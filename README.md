@@ -1,9 +1,10 @@
 # ARM-Sparse
 
 ARM-Sparse studies whether input-dependent FFN sparsity can produce actual
-wall-clock inference gains on Apple Silicon CPUs. ASTRA maintains research
-state and evidence; LUNA will manage scientific writing when verified evidence
-is ready. These are parts of one project.
+wall-clock inference gains on Apple Silicon CPUs. SOLARIS is the single
+research lead: it plans, implements, measures, validates evidence and controls
+the canonical research state. LUNA may be spawned for bounded scientific-writing
+work, but it neither conducts experiments nor directly controls the manuscript.
 
 ## Current scope
 
@@ -37,8 +38,8 @@ python -m pytest -q
 
 ```bash
 .venv/bin/python benchmarks/run_exp001.py
-.venv/bin/python astra/validate_exp001.py research/results/EXP-001/<run-directory>
-.venv/bin/python astra/summarize_exp001.py research/results/EXP-001/<run-directory>
+.venv/bin/python research_tools/validate_exp001.py research/results/EXP-001/<run-directory>
+.venv/bin/python research_tools/summarize_exp001.py research/results/EXP-001/<run-directory>
 ```
 
 The runner builds the native library and saves raw timings, weights, masks,
@@ -84,7 +85,7 @@ gate.
 - `armsparse/`: Python reference kernels, masks and tested reference runtime.
 - `cpp/`: native CPU executors.
 - `benchmarks/`: EXP-001 runner and native bridge; `results/` preserves legacy measurements.
-- `astra/`: experiment integrity checks and result aggregation.
+- `research_tools/`: ordinary experiment validation and result-aggregation scripts.
 - `research/`: protocols, decisions, hypotheses, claims and measured artifacts.
 - `tests/`: reference and native correctness checks.
 
