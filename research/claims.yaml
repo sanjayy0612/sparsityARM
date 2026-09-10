@@ -133,3 +133,14 @@ claims:
       - experiment: EXP-004
         manifest: results/EXP-004/m2-oracle-screening-20260909/manifest.json
     limitation: Small screening corpus and one inexpensive LSH layout; B32 has no matched original-order output-norm baseline and is excluded from the improvement comparison
+  - id: C013
+    type: quantitative_observation
+    status: verified
+    statement: Calibration-only hot/cold ordering increased held-out direct block-selection activation L1 retention relative to original order by 1.424 to 4.294 percentage points across B8/B16/B32 at 20% and 30% target sparsity, while exact expansion retained at most 0.02921% sparsity.
+    scope: Pinned EXP-002 Llama 3.2 1B post-SwiGLU activations; layouts learned on prompts P01-P04 and evaluated on P05-P08 across all 16 layers
+    evidence:
+      - experiment: EXP-007
+        analysis: results/EXP-007/m2-layout-diagnostic-20260910-r1/analysis.json
+        split: held_out
+    calculation: Equal-weight mean across 16 layer aggregates for each matched layout, block-size and target-sparsity configuration
+    limitation: Activation-concentration diagnostic on a small prompt set; not language quality, task accuracy, execution latency, or deployable selection evidence
