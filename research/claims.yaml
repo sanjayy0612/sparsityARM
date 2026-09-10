@@ -157,3 +157,13 @@ claims:
       - experiment: EXP-004
         manifest: results/EXP-004/m2-oracle-screening-20260909/manifest.json
     limitation: Small held-out screen with oracle/reference selection; not a deployable selector, broad quality evaluation, or runtime result
+  - id: C015
+    type: quantitative_observation
+    status: verified
+    statement: In staged B8/10% replay profiling, down projection accounted for 58.53-58.66% of median latency, gate/up plus SwiGLU for 40.74-41.06%, and mask compaction for about 0.02%; staging was 7.93-10.45% slower than the interleaved executor.
+    scope: Apple M2, FP32, one thread, synthetic 2048/8192 SwiGLU, 16 retained real-model B8 replay masks, three weight/input seeds
+    evidence:
+      - experiment: EXP-009
+        manifest: results/EXP-009/m2-b8-profile-20260910/manifest.json
+    calculation: Per-run medians recomputed from 800 retained invocations per timing field
+    limitation: Phase timings describe the staged diagnostic rather than the original interleaved kernel exactly; no hardware counters and no end-to-end inference
