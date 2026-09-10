@@ -29,6 +29,54 @@ static float dot_neon(const float* a, const float* b, int n) {
     return sum;
 }
 
+static float qdot_neon(const int8_t* weights, const float* values, int n) {
+    float32x4_t s0 = vdupq_n_f32(0.f), s1 = vdupq_n_f32(0.f);
+    int i = 0;
+    for (; i + 8 <= n; i += 8) {
+        const int16x8_t q16 = vmovl_s8(vld1_s8(weights+i));
+        s0 = vfmaq_f32(s0, vcvtq_f32_s32(vmovl_s16(vget_low_s16(q16))), vld1q_f32(values+i));
+        s1 = vfmaq_f32(s1, vcvtq_f32_s32(vmovl_s16(vget_high_s16(q16))), vld1q_f32(values+i+4));
+    }
+    float sum = vaddvq_f32(vaddq_f32(s0, s1));
+    for (; i < n; ++i) sum += float(weights[i]) * values[i];
+    return sum;
+}
+
+// Weight-only symmetric INT8 diagnostic. mode 0 is matched dense with down
+// [h,m]; mode 1 is B-block sparse with down [blocks,h,b].
+extern "C" double qffn(int mode, int h, int m, int b, const float* x,
+    const int8_t* gate, const int8_t* up, const int8_t* down,
+    float gate_scale, float up_scale, float down_scale,
+    const uint8_t* mask, float* scratch, float* output) {
+    const auto start = std::chrono::steady_clock::now();
+    float* activation = scratch;
+    std::fill(output, output+h, 0.f);
+    if (mode == 0) {
+        for (int i = 0; i < m; ++i) {
+            const float g = gate_scale*qdot_neon(gate+size_t(i)*h, x, h);
+            const float u = up_scale*qdot_neon(up+size_t(i)*h, x, h);
+            activation[i] = (g/(1.f+std::exp(-g)))*u;
+        }
+        for (int j = 0; j < h; ++j)
+            output[j] = down_scale*qdot_neon(down+size_t(j)*m, activation, m);
+    } else {
+        for (int block = 0; block < m/b; ++block) {
+            if (!mask[block]) continue;
+            const int first = block*b;
+            for (int k = 0; k < b; ++k) {
+                const float g = gate_scale*qdot_neon(gate+size_t(first+k)*h, x, h);
+                const float u = up_scale*qdot_neon(up+size_t(first+k)*h, x, h);
+                activation[k] = (g/(1.f+std::exp(-g)))*u;
+            }
+            const int8_t* tile = down+size_t(block)*h*b;
+            for (int j = 0; j < h; ++j)
+                output[j] += down_scale*qdot_neon(tile+size_t(j)*b, activation, b);
+        }
+    }
+    return std::chrono::duration<double, std::milli>(
+        std::chrono::steady_clock::now()-start).count();
+}
+
 // All gate/up weights: [intermediate, hidden]. Dense down: [hidden, intermediate].
 // Irregular down: [intermediate, hidden]. Block down: [blocks, hidden, B].
 // mode 0: Accelerate dense; 1: native neuron; 2: native block;

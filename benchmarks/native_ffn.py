@@ -38,6 +38,10 @@ class NativeFFN:
             + [byte_array] + [float_array] * 2 + [int_array]
             + [ctypes.POINTER(ctypes.c_int)] * 2 + [double_array])
         self.lib.profile_block_staged.restype = None
+        int8_array = np.ctypeslib.ndpointer(dtype=np.int8, flags="C_CONTIGUOUS")
+        self.lib.qffn.argtypes = [ctypes.c_int]*4 + [float_array] + [int8_array]*3 \
+            + [ctypes.c_float]*3 + [byte_array] + [float_array]*2
+        self.lib.qffn.restype = ctypes.c_double
 
     def execute(self, mode, x, gate, up, down, mask, block_size, scratch, output):
         m, h = gate.shape
@@ -67,6 +71,24 @@ class NativeFFN:
                 "gate_up_activation_ms": timings[2], "down_projection_ms": timings[3],
                 "total_ms": timings[4], "active_blocks": active.value,
                 "active_runs": runs.value}
+
+    def execute_quantized(self, mode, x, gate, up, down, scales, mask, block_size,
+                          scratch, output):
+        m, h = gate.shape
+        expected = (h, m) if mode == 0 else (m//block_size, h, block_size)
+        if (mode not in (0, 1) or up.shape != gate.shape or down.shape != expected
+                or gate.dtype != np.int8 or up.dtype != np.int8 or down.dtype != np.int8):
+            raise ValueError("invalid quantized FFN inputs")
+        return self.lib.qffn(mode, h, m, block_size, x, gate, up, down,
+            *map(float, scales), mask, scratch, output)
+
+
+def quantize_symmetric(values):
+    """Per-tensor symmetric INT8 quantization for the EXP-013 feasibility test."""
+    scale = float(np.max(np.abs(values))) / 127
+    if not np.isfinite(scale) or scale <= 0:
+        raise ValueError("quantization requires finite nonzero weights")
+    return np.clip(np.rint(values / scale), -127, 127).astype(np.int8), scale
 
 
 def reference(x, gate, up, down, mask):

@@ -109,3 +109,22 @@ def test_coalesced_active_runs_match_independent_reference(native):
     native.execute(5, x, gate, up, down, blocks, b, scratch, output)
     expected = native_module.reference(x, gate, up, down, np.repeat(blocks, b))
     np.testing.assert_allclose(output, expected, rtol=3e-4, atol=3e-5)
+
+
+def test_quantized_dense_and_block_match_dequantized_references(native):
+    rng=np.random.default_rng(1313); h,m,b=17,64,8
+    x=rng.standard_normal(h).astype(np.float32)
+    weights=[(rng.standard_normal(shape)*.05).astype(np.float32)
+             for shape in ((m,h),(m,h),(h,m))]
+    quantized=[native_module.quantize_symmetric(w) for w in weights]
+    (qg,sg),(qu,su),(qd,sd)=quantized
+    packed=qd.reshape(h,m//b,b).transpose(1,0,2).copy()
+    blocks=np.array([1,0,1,1,0,1,0,1],np.uint8)
+    scratch=np.empty(2*m,np.float32); output=np.empty(h,np.float32)
+    dg,du,dd=qg*sg,qu*su,qd*sd
+    for mode,down,mask,expected_mask in ((0,qd,np.ones(m,np.uint8),np.ones(m)),
+                                         (1,packed,blocks,np.repeat(blocks,b))):
+        native.execute_quantized(mode,x,qg,qu,down,(sg,su,sd),mask,b,scratch,output)
+        expected=native_module.reference(x,dg.astype(np.float32),du.astype(np.float32),
+                                         dd.astype(np.float32),expected_mask)
+        np.testing.assert_allclose(output,expected,rtol=3e-4,atol=3e-5)
