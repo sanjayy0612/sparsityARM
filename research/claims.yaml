@@ -218,3 +218,13 @@ claims:
       - experiment: EXP-014
         artifact: results/EXP-014/m2-q8-dense-20260910-r1.json
     limitation: Dense baseline only; short benchmark with no sparsity, quality evaluation, confidence interval, or end-to-end application workload
+  - id: C021
+    type: quantitative_observation
+    status: verified
+    statement: A minimal B32 executor using pinned llama.cpp Q8_0 primitives did not reproducibly beat its matched dense control from 10% through 80% sparsity; at 80%, two runs were 8.4% and 15.9% faster while the third was 3.6% slower.
+    scope: Apple M2, one thread, synthetic one-token 2048/8192 SwiGLU, fixed clustered B32 masks, Q8_0 weights and activations
+    evidence:
+      - experiment: EXP-015
+        manifest: results/EXP-015/m2-q8-b32-20260910-r1/manifest.json
+    calculation: Per-run comparison of matched dense and B32 medians from 200 retained timings per implementation and sparsity
+    limitation: Direct Q8_0 dot-product calls rather than the full GGML graph or multi-row matrix path; synthetic masks, no selector cost, and no end-to-end model inference claim
