@@ -209,3 +209,12 @@ claims:
         manifest: results/EXP-012/m2-b8-break-even-20260910/manifest.json
     calculation: Per-run median matched INT8 comparison; absolute contextual comparison against EXP-012 Accelerate FP32 dense medians
     limitation: Custom INT8 dense is not a strong optimized quantized baseline; synthetic masks and no end-to-end model quality or latency
+  - id: C020
+    type: quantitative_observation
+    status: verified
+    statement: The pinned CPU-only llama.cpp Q8_0 Llama 3.2 1B baseline averaged 125.113 prompt-processing tokens/s at 128 tokens and 40.416 generation tokens/s at 32 tokens using one Apple M2 CPU thread.
+    scope: llama.cpp fa676981, Q8_0 GGUF, Metal disabled, zero GPU layers, five repetitions per workload
+    evidence:
+      - experiment: EXP-014
+        artifact: results/EXP-014/m2-q8-dense-20260910-r1.json
+    limitation: Dense baseline only; short benchmark with no sparsity, quality evaluation, confidence interval, or end-to-end application workload
