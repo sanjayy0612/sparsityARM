@@ -238,3 +238,13 @@ claims:
         manifest: results/EXP-016/m2-tinyllama-screening-20260910-r1/manifest.json
     calculation: Same-run perplexity divided by dense perplexity minus one
     limitation: Small screening corpus and oracle contribution scoring; no selector cost, downstream task evaluation, executor latency, or end-to-end inference claim
+  - id: C023
+    type: quantitative_observation
+    status: verified
+    statement: At TinyLlama's quality-compatible B8/20% point, the native FP32 B8 executor was 25.31% to 32.49% slower than Accelerate dense across three runs. A matched custom INT8 B8 executor was 16.11% to 16.22% faster than its custom INT8 dense control, but its 3.88-3.89 ms latency remained above the 2.64-2.69 ms Accelerate FP32 dense baseline.
+    scope: Apple M2, one thread, synthetic one-token 2048/5632 SwiGLU, 20.028% clustered equal-work B8 sparsity
+    evidence:
+      - experiment: EXP-017
+        manifest: results/EXP-017/m2-tinyllama-b8-s20-20260911-r1/manifest.json
+    calculation: Per-run comparison of dense and B8 medians from 200 retained timings per executor
+    limitation: Synthetic masks and an FFN microbenchmark; custom per-tensor weight-only INT8 is not a production quantized baseline and no end-to-end model speedup is established
