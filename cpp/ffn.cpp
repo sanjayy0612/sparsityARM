@@ -69,3 +69,55 @@ extern "C" double scan_mask(const uint8_t* mask, int n, int* indices, int* count
     *count = used;
     return std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - start).count();
 }
+
+// Diagnostic staged B-block executor. Five timings are output initialization,
+// mask compaction, gate/up/activation, down projection, and total milliseconds.
+extern "C" void profile_block_staged(int h, int m, int b, const float* x,
+    const float* gate, const float* up, const float* down, const uint8_t* mask,
+    float* scratch, float* output, int* indices, int* active, int* runs,
+    double* timings) {
+    using clock = std::chrono::steady_clock;
+    const auto total_start = clock::now();
+    std::fill(output, output + h, 0.f);
+    const auto init_end = clock::now();
+
+    int used = 0;
+    int run_count = 0;
+    bool previous = false;
+    for (int block = 0; block < m/b; ++block) {
+        if (mask[block]) {
+            indices[used++] = block;
+            if (!previous) ++run_count;
+            previous = true;
+        } else {
+            previous = false;
+        }
+    }
+    const auto scan_end = clock::now();
+
+    float* activation = scratch;
+    for (int index = 0; index < used; ++index) {
+        const int first = indices[index] * b;
+        for (int k = 0; k < b; ++k) {
+            const float v = dot(gate + size_t(first+k)*h, x, h);
+            activation[first+k] = (v / (1.f + std::exp(-v)))
+                                  * dot(up + size_t(first+k)*h, x, h);
+        }
+    }
+    const auto projection_end = clock::now();
+
+    for (int index = 0; index < used; ++index) {
+        const int block = indices[index];
+        const float* tile = down + size_t(block)*h*b;
+        const float* values = activation + block*b;
+        for (int j = 0; j < h; ++j) output[j] += dot(tile + size_t(j)*b, values, b);
+    }
+    const auto down_end = clock::now();
+    *active = used;
+    *runs = run_count;
+    timings[0] = std::chrono::duration<double, std::milli>(init_end-total_start).count();
+    timings[1] = std::chrono::duration<double, std::milli>(scan_end-init_end).count();
+    timings[2] = std::chrono::duration<double, std::milli>(projection_end-scan_end).count();
+    timings[3] = std::chrono::duration<double, std::milli>(down_end-projection_end).count();
+    timings[4] = std::chrono::duration<double, std::milli>(down_end-total_start).count();
+}

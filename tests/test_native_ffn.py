@@ -60,3 +60,23 @@ def test_scan_diagnostic_returns_selected_indices(native):
     native.lib.scan_mask(mask, len(mask), indices, ctypes.byref(count))
     assert count.value == 3
     np.testing.assert_array_equal(indices[:count.value], [1, 3, 4])
+
+
+def test_staged_block_profile_matches_reference_and_reports_structure(native):
+    rng = np.random.default_rng(909)
+    h, m, b = 17, 64, 8
+    x = rng.standard_normal(h).astype(np.float32)
+    gate = (rng.standard_normal((m, h)) * .1).astype(np.float32)
+    up = (rng.standard_normal((m, h)) * .1).astype(np.float32)
+    dense_down = (rng.standard_normal((h, m)) * .1).astype(np.float32)
+    packed = dense_down.reshape(h, m//b, b).transpose(1, 0, 2).copy()
+    blocks = np.array([1, 1, 0, 1, 0, 0, 1, 1], dtype=np.uint8)
+    scratch, output = np.empty(2*m, np.float32), np.empty(h, np.float32)
+    profile = native.profile_block_staged(x, gate, up, packed, blocks, b, scratch, output,
+                                          np.empty(m//b, np.int32))
+    expected = native_module.reference(x, gate, up, dense_down, np.repeat(blocks, b))
+    np.testing.assert_allclose(output, expected, rtol=2e-4, atol=2e-5)
+    assert profile["active_blocks"] == 5
+    assert profile["active_runs"] == 3
+    assert profile["total_ms"] >= sum(profile[key] for key in (
+        "output_init_ms", "mask_scan_ms", "gate_up_activation_ms", "down_projection_ms")) * .999

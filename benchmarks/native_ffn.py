@@ -33,6 +33,11 @@ class NativeFFN:
         self.lib.ffn.restype = ctypes.c_double
         self.lib.scan_mask.argtypes = [byte_array, ctypes.c_int, int_array, ctypes.POINTER(ctypes.c_int)]
         self.lib.scan_mask.restype = ctypes.c_double
+        double_array = np.ctypeslib.ndpointer(dtype=np.float64, flags="C_CONTIGUOUS")
+        self.lib.profile_block_staged.argtypes = ([ctypes.c_int] * 3 + [float_array] * 4
+            + [byte_array] + [float_array] * 2 + [int_array]
+            + [ctypes.POINTER(ctypes.c_int)] * 2 + [double_array])
+        self.lib.profile_block_staged.restype = None
 
     def execute(self, mode, x, gate, up, down, mask, block_size, scratch, output):
         m, h = gate.shape
@@ -45,6 +50,22 @@ class NativeFFN:
         if down.shape != expected_down or mask.shape != ((m,) if mode < 2 else (m//block_size,)):
             raise ValueError("invalid packed weights or mask")
         return self.lib.ffn(mode, h, m, block_size, x, gate, up, down, mask, scratch, output)
+
+    def profile_block_staged(self, x, gate, up, down, mask, block_size, scratch, output,
+                             indices):
+        m, h = gate.shape
+        if (up.shape != gate.shape or down.shape != (m//block_size, h, block_size)
+                or mask.shape != (m//block_size,) or indices.shape != (m//block_size,)):
+            raise ValueError("invalid staged profile inputs")
+        active, runs = ctypes.c_int(), ctypes.c_int()
+        timings = np.empty(5, dtype=np.float64)
+        self.lib.profile_block_staged(h, m, block_size, x, gate, up, down, mask, scratch,
+                                      output, indices, ctypes.byref(active),
+                                      ctypes.byref(runs), timings)
+        return {"output_init_ms": timings[0], "mask_scan_ms": timings[1],
+                "gate_up_activation_ms": timings[2], "down_projection_ms": timings[3],
+                "total_ms": timings[4], "active_blocks": active.value,
+                "active_runs": runs.value}
 
 
 def reference(x, gate, up, down, mask):
