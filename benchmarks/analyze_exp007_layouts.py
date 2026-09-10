@@ -27,6 +27,13 @@ def command(arguments: list[str]) -> str:
     return subprocess.run(arguments, check=True, capture_output=True, text=True).stdout.strip()
 
 
+def cpu_name() -> str:
+    """Return the best available CPU name without making provenance collection fatal."""
+    result = subprocess.run(["sysctl", "-n", "machdep.cpu.brand_string"], check=False,
+                            capture_output=True, text=True)
+    return result.stdout.strip() or platform.processor() or platform.machine()
+
+
 def top_mask(scores: np.ndarray, keep: int) -> np.ndarray:
     if scores.ndim != 2 or keep < 1 or keep > scores.shape[1]:
         raise ValueError("invalid score matrix or keep count")
@@ -128,7 +135,7 @@ def main():
                                 for path in source_paths},
               "git_commit": command(["git", "rev-parse", "HEAD"]),
               "git_status": command(["git", "status", "--short"]),
-              "hardware": {"cpu": command(["sysctl", "-n", "machdep.cpu.brand_string"]),
+              "hardware": {"cpu": cpu_name(),
                            "os": platform.platform(), "arch": platform.machine()},
               "software": {"python": sys.version, "numpy": np.__version__},
               "capture_manifest_sha256": sha(manifest_path), "source_artifacts": source_hashes,
