@@ -248,3 +248,13 @@ claims:
         manifest: results/EXP-017/m2-tinyllama-b8-s20-20260911-r1/manifest.json
     calculation: Per-run comparison of dense and B8 medians from 200 retained timings per executor
     limitation: Synthetic masks and an FFN microbenchmark; custom per-tensor weight-only INT8 is not a production quantized baseline and no end-to-end model speedup is established
+  - id: C024
+    type: quantitative_observation
+    status: verified
+    statement: For synthetic 2048 x 5632 x 2048 FP32 SwiGLU at B8, the native block executor remained 1.1% to 5.2% slower than Accelerate dense at 40% sparsity and first produced a reproducible grid-point speedup at 50%, where it was 10.7% to 17.1% faster across three runs.
+    scope: Apple M2, one thread, one token, TinyLlama FFN geometry, clustered equal-work B8 masks
+    evidence:
+      - experiment: EXP-018
+        manifest: results/EXP-018/m2-tinyllama-b8-break-even-20260911-r1/manifest.json
+    calculation: Per-run Accelerate dense median divided by native B8 median minus one, using 200 retained timings per executor and case
+    limitation: Synthetic favorable masks and FP32 FFN microbenchmark; exact crossover between 40% and 50% was not measured and no end-to-end model speedup is established
