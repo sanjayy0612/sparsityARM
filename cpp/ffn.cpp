@@ -4,6 +4,7 @@
 #include <chrono>
 #include <cmath>
 #include <cstdint>
+#include <arm_neon.h>
 
 extern "C" int configure_threads() {
     return BLASSetThreading(BLAS_THREADING_SINGLE_THREADED);
@@ -16,9 +17,22 @@ static float dot(const float* a, const float* b, int n) {
     return sum;
 }
 
+static float dot_neon(const float* a, const float* b, int n) {
+    float32x4_t s0 = vdupq_n_f32(0.f), s1 = vdupq_n_f32(0.f);
+    int i = 0;
+    for (; i + 8 <= n; i += 8) {
+        s0 = vfmaq_f32(s0, vld1q_f32(a+i), vld1q_f32(b+i));
+        s1 = vfmaq_f32(s1, vld1q_f32(a+i+4), vld1q_f32(b+i+4));
+    }
+    float sum = vaddvq_f32(vaddq_f32(s0, s1));
+    for (; i < n; ++i) sum += a[i] * b[i];
+    return sum;
+}
+
 // All gate/up weights: [intermediate, hidden]. Dense down: [hidden, intermediate].
 // Irregular down: [intermediate, hidden]. Block down: [blocks, hidden, B].
-// mode 0: Accelerate dense; 1: native neuron; 2: native block; 3: Accelerate block.
+// mode 0: Accelerate dense; 1: native neuron; 2: native block;
+// 3: Accelerate block; 4: explicit NEON B8 block.
 extern "C" double ffn(int mode, int h, int m, int b, const float* x,
     const float* gate, const float* up, const float* down,
     const uint8_t* mask, float* scratch, float* output) {
@@ -48,6 +62,21 @@ extern "C" double ffn(int mode, int h, int m, int b, const float* x,
                 cblas_sgemv(CblasRowMajor, CblasNoTrans, b, h, 1, up + size_t(first)*h, h, x, 1, 0, u, 1);
                 for (int k = 0; k < b; ++k) g[k] = (g[k] / (1.f + std::exp(-g[k]))) * u[k];
                 cblas_sgemv(CblasRowMajor, CblasNoTrans, h, b, 1, down + size_t(block)*h*b, b, g, 1, 1, output, 1);
+            } else if (mode == 4) {
+                for (int k = 0; k < 8; ++k) {
+                    const float v = dot_neon(gate + size_t(first+k)*h, x, h);
+                    g[k] = (v / (1.f + std::exp(-v)))
+                           * dot_neon(up + size_t(first+k)*h, x, h);
+                }
+                const float* tile = down + size_t(block)*h*8;
+                const float32x4_t values0 = vld1q_f32(g);
+                const float32x4_t values1 = vld1q_f32(g+4);
+                for (int j = 0; j < h; ++j) {
+                    const float* row = tile + size_t(j)*8;
+                    output[j] += vaddvq_f32(vaddq_f32(
+                        vmulq_f32(vld1q_f32(row), values0),
+                        vmulq_f32(vld1q_f32(row+4), values1)));
+                }
             } else {
                 for (int k = 0; k < b; ++k) {
                     const float v = dot(gate + size_t(first+k)*h, x, h);

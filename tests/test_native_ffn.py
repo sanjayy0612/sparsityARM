@@ -80,3 +80,18 @@ def test_staged_block_profile_matches_reference_and_reports_structure(native):
     assert profile["active_runs"] == 3
     assert profile["total_ms"] >= sum(profile[key] for key in (
         "output_init_ms", "mask_scan_ms", "gate_up_activation_ms", "down_projection_ms")) * .999
+
+
+def test_neon_b8_matches_independent_reference(native):
+    rng = np.random.default_rng(1010)
+    h, m, b = 19, 64, 8
+    x = rng.standard_normal(h).astype(np.float32)
+    gate = (rng.standard_normal((m, h)) * .1).astype(np.float32)
+    up = (rng.standard_normal((m, h)) * .1).astype(np.float32)
+    dense_down = (rng.standard_normal((h, m)) * .1).astype(np.float32)
+    packed = dense_down.reshape(h, m//b, b).transpose(1, 0, 2).copy()
+    blocks = np.array([1, 0, 1, 1, 0, 1, 0, 1], dtype=np.uint8)
+    output, scratch = np.empty(h, np.float32), np.empty(2*m, np.float32)
+    native.execute(4, x, gate, up, packed, blocks, b, scratch, output)
+    expected = native_module.reference(x, gate, up, dense_down, np.repeat(blocks, b))
+    np.testing.assert_allclose(output, expected, rtol=3e-4, atol=3e-5)
