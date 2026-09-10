@@ -187,3 +187,13 @@ claims:
         manifest: results/EXP-011/m2-coalesced-b8-20260910/manifest.json
     calculation: Comparisons of per-run medians recomputed from 3200 retained timings per implementation
     limitation: Masks contained a median 93 active runs; the result does not reject coalescing for layouts with far fewer, longer runs
+  - id: C018
+    type: quantitative_observation
+    status: verified
+    statement: The native FP32 B8 executor remained 8.9-11.7% slower than Accelerate dense at 30% equal-work sparsity and first became faster at the 40% grid point, where its speedup was 1.6-3.1% across three runs.
+    scope: Apple M2, FP32, one thread, synthetic 2048/8192 SwiGLU, clustered equal-work B8 masks
+    evidence:
+      - experiment: EXP-012
+        manifest: results/EXP-012/m2-b8-break-even-20260910/manifest.json
+    calculation: Per-run comparison of native B8 and Accelerate dense medians from 200 retained timings per case
+    limitation: Synthetic clustered masks and discrete 10% grid; exact crossover between 30% and 40% was not measured
