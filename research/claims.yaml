@@ -177,3 +177,13 @@ claims:
         manifest: results/EXP-010/m2-neon-b8-20260910/manifest.json
     calculation: Comparisons of per-run medians recomputed from 3200 retained timings per implementation
     limitation: One direct intrinsic implementation; does not reject other SIMD schedules, quantization, run coalescing, generated microkernels, or other ARM CPUs
+  - id: C017
+    type: quantitative_observation
+    status: verified
+    statement: Coalescing contiguous active B8 runs into Accelerate matrix-vector calls was 28.49-29.79% slower than native B8 and 50.15-50.39% slower than Accelerate dense across three replay runs.
+    scope: Apple M2, FP32, one thread, synthetic 2048/8192 SwiGLU, 16 real-model B8 masks at 9.961% realized sparsity
+    evidence:
+      - experiment: EXP-011
+        manifest: results/EXP-011/m2-coalesced-b8-20260910/manifest.json
+    calculation: Comparisons of per-run medians recomputed from 3200 retained timings per implementation
+    limitation: Masks contained a median 93 active runs; the result does not reject coalescing for layouts with far fewer, longer runs
