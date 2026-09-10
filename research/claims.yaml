@@ -144,3 +144,16 @@ claims:
         split: held_out
     calculation: Equal-weight mean across 16 layer aggregates for each matched layout, block-size and target-sparsity configuration
     limitation: Activation-concentration diagnostic on a small prompt set; not language quality, task accuracy, execution latency, or deployable selection evidence
+  - id: C014
+    type: quantitative_observation
+    status: verified
+    statement: Hot/cold ordering reduced perplexity relative to both original and LSH ordering in all four matched B8/B16 configurations, but its 20% and 30% block sparsity conditions increased perplexity by 6.799% to 26.399% and all failed the preregistered 5% gate.
+    scope: Pinned Llama 3.2 1B, CPU BF16, 16 deterministic held-out WikiText-2 excerpts, 2032 predicted tokens, post-SwiGLU output-norm oracle masks
+    evidence:
+      - experiment: EXP-008
+        manifest: results/EXP-008/m2-hot-cold-screening-20260910/manifest.json
+      - experiment: EXP-006
+        manifest: results/EXP-006/m2-reordered-screening-20260909/manifest.json
+      - experiment: EXP-004
+        manifest: results/EXP-004/m2-oracle-screening-20260909/manifest.json
+    limitation: Small held-out screen with oracle/reference selection; not a deployable selector, broad quality evaluation, or runtime result
