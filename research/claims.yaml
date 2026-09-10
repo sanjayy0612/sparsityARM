@@ -197,3 +197,15 @@ claims:
         manifest: results/EXP-012/m2-b8-break-even-20260910/manifest.json
     calculation: Per-run comparison of native B8 and Accelerate dense medians from 200 retained timings per case
     limitation: Synthetic clustered masks and discrete 10% grid; exact crossover between 30% and 40% was not measured
+  - id: C019
+    type: quantitative_observation
+    status: verified
+    statement: The custom weight-only INT8 B8 kernel was 5.9-6.3% faster than its matched custom INT8 dense kernel at 10% sparsity, but B8 still took about 6.4 ms compared with the established approximately 4.0 ms Accelerate FP32 dense baseline.
+    scope: Apple M2, one thread, synthetic 2048/8192 SwiGLU, symmetric per-tensor INT8 weights with FP32 activations and accumulation
+    evidence:
+      - experiment: EXP-013
+        manifest: results/EXP-013/m2-int8-break-even-20260910/manifest.json
+      - experiment: EXP-012
+        manifest: results/EXP-012/m2-b8-break-even-20260910/manifest.json
+    calculation: Per-run median matched INT8 comparison; absolute contextual comparison against EXP-012 Accelerate FP32 dense medians
+    limitation: Custom INT8 dense is not a strong optimized quantized baseline; synthetic masks and no end-to-end model quality or latency
