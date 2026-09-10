@@ -32,7 +32,7 @@ static float dot_neon(const float* a, const float* b, int n) {
 // All gate/up weights: [intermediate, hidden]. Dense down: [hidden, intermediate].
 // Irregular down: [intermediate, hidden]. Block down: [blocks, hidden, B].
 // mode 0: Accelerate dense; 1: native neuron; 2: native block;
-// 3: Accelerate block; 4: explicit NEON B8 block.
+// 3: Accelerate block; 4: explicit NEON B8 block; 5: coalesced active runs.
 extern "C" double ffn(int mode, int h, int m, int b, const float* x,
     const float* gate, const float* up, const float* down,
     const uint8_t* mask, float* scratch, float* output) {
@@ -52,6 +52,25 @@ extern "C" double ffn(int mode, int h, int m, int b, const float* x,
             const float activation = (gate_value / (1.f + std::exp(-gate_value))) * dot(up + size_t(i)*h, x, h);
             const float* column = down + size_t(i)*h;
             for (int j = 0; j < h; ++j) output[j] += column[j] * activation;
+        }
+    } else if (mode == 5) {
+        int block = 0;
+        while (block < m/b) {
+            while (block < m/b && !mask[block]) ++block;
+            if (block == m/b) break;
+            const int run_start = block;
+            while (block < m/b && mask[block]) ++block;
+            const int first = run_start*b;
+            const int width = (block-run_start)*b;
+            cblas_sgemv(CblasRowMajor, CblasNoTrans, width, h, 1,
+                        gate + size_t(first)*h, h, x, 1, 0, g + first, 1);
+            cblas_sgemv(CblasRowMajor, CblasNoTrans, width, h, 1,
+                        up + size_t(first)*h, h, x, 1, 0, u + first, 1);
+            for (int k = first; k < first+width; ++k)
+                g[k] = (g[k] / (1.f + std::exp(-g[k]))) * u[k];
+            // Dense down layout [h,m], restricted to contiguous columns.
+            cblas_sgemv(CblasRowMajor, CblasNoTrans, h, width, 1,
+                        down + first, m, g + first, 1, 1, output, 1);
         }
     } else {
         for (int block = 0; block < m/b; ++block) {

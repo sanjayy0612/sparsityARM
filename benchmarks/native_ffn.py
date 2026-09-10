@@ -43,11 +43,11 @@ class NativeFFN:
         m, h = gate.shape
         if (x.shape != (h,) or up.shape != gate.shape or output.shape != (h,)
                 or scratch.size != 2*m or block_size <= 0 or m % block_size
-                or mode not in (0, 1, 2, 3, 4) or (mode == 4 and block_size != 8)):
+                or mode not in (0, 1, 2, 3, 4, 5) or (mode == 4 and block_size != 8)):
             raise ValueError("invalid FFN dimensions or mode")
         expected_down = {0: (h, m), 1: (m, h), 2: (m//block_size, h, block_size),
                          3: (m//block_size, h, block_size),
-                         4: (m//block_size, h, block_size)}[mode]
+                         4: (m//block_size, h, block_size), 5: (h, m)}[mode]
         if down.shape != expected_down or mask.shape != ((m,) if mode < 2 else (m//block_size,)):
             raise ValueError("invalid packed weights or mask")
         return self.lib.ffn(mode, h, m, block_size, x, gate, up, down, mask, scratch, output)

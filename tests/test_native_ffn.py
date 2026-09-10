@@ -95,3 +95,17 @@ def test_neon_b8_matches_independent_reference(native):
     native.execute(4, x, gate, up, packed, blocks, b, scratch, output)
     expected = native_module.reference(x, gate, up, dense_down, np.repeat(blocks, b))
     np.testing.assert_allclose(output, expected, rtol=3e-4, atol=3e-5)
+
+
+def test_coalesced_active_runs_match_independent_reference(native):
+    rng = np.random.default_rng(1111)
+    h, m, b = 19, 64, 8
+    x = rng.standard_normal(h).astype(np.float32)
+    gate = (rng.standard_normal((m, h)) * .1).astype(np.float32)
+    up = (rng.standard_normal((m, h)) * .1).astype(np.float32)
+    down = (rng.standard_normal((h, m)) * .1).astype(np.float32)
+    blocks = np.array([0, 1, 1, 1, 0, 1, 0, 1], dtype=np.uint8)
+    output, scratch = np.empty(h, np.float32), np.empty(2*m, np.float32)
+    native.execute(5, x, gate, up, down, blocks, b, scratch, output)
+    expected = native_module.reference(x, gate, up, down, np.repeat(blocks, b))
+    np.testing.assert_allclose(output, expected, rtol=3e-4, atol=3e-5)
