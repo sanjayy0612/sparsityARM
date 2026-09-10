@@ -228,3 +228,13 @@ claims:
         manifest: results/EXP-015/m2-q8-b32-20260910-r1/manifest.json
     calculation: Per-run comparison of matched dense and B32 medians from 200 retained timings per implementation and sparsity
     limitation: Direct Q8_0 dot-product calls rather than the full GGML graph or multi-row matrix path; synthetic masks, no selector cost, and no end-to-end model inference claim
+  - id: C022
+    type: quantitative_observation
+    status: verified
+    statement: On the TinyLlama 1.1B screening corpus, output-contribution B8 masks increased perplexity by 1.336%, 3.157%, and 6.874% at 10%, 20%, and 30% sparsity; the first two passed the 5% quality gate while 30% failed. B32 passed only at 10%, with a 3.620% increase, and failed at 20% and 30% with 10.306% and 21.781% increases.
+    scope: Pinned TinyLlama 1.1B 3T checkpoint, Apple M2 CPU, BF16, 16 WikiText-2 excerpts, 2032 predicted tokens per condition, post-SwiGLU oracle masks
+    evidence:
+      - experiment: EXP-016
+        manifest: results/EXP-016/m2-tinyllama-screening-20260910-r1/manifest.json
+    calculation: Same-run perplexity divided by dense perplexity minus one
+    limitation: Small screening corpus and oracle contribution scoring; no selector cost, downstream task evaluation, executor latency, or end-to-end inference claim
