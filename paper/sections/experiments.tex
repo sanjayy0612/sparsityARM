@@ -1,0 +1,24 @@
+\section{Experimental Design}
+
+Experiments ran CPU-only on an Apple M2 MacBook with one execution thread. The
+quality corpus contains 16 deterministic WikiText-2 excerpts and 2,032
+predicted tokens per condition. Quality inference used BF16 model execution.
+Runtime experiments use single-token synthetic SwiGLU inputs with real model
+geometries: $2048\!\times\!8192\!\times\!2048$ for Llama 3.2 1B and
+$2048\!\times\!5632\!\times\!2048$ for TinyLlama 1.1B. The primary executor
+comparison is native packed FP32 B8 against Accelerate dense; cases retain 200
+post-warmup measurements and are repeated with three seeds.
+
+Five experiments carry the conclusion. EXP-004 determines the Llama quality
+frontier. EXP-005 replays its quality-compatible masks. EXP-012 measures the
+Llama mechanical break-even. EXP-016 repeats quality screening on TinyLlama,
+including B32 as a granularity control. EXP-018 measures the TinyLlama B8
+break-even. Thirteen additional experiments remain in the repository as
+baselines, failed layouts, profiling, SIMD/coalescing attempts, and quantized
+runtime probes, but are not promoted into independent headline claims.
+
+This design is favorable to sparsity: masks are clustered, selection cost is
+absent, and latency covers the FFN rather than complete token generation. A
+failure under these boundaries is therefore evidence against the current
+executor-plus-oracle configuration, not against every trained block-sparse
+system.

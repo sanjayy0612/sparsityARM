@@ -1,0 +1,34 @@
+\section{Methodology}
+
+For an input $x$, a SwiGLU FFN computes
+\begin{equation}
+y=W_d\left(\operatorname{SiLU}(W_gx)\odot W_ux\right).
+\end{equation}
+We divide the intermediate dimension into groups of $B$ adjacent neurons. For
+each active group, the executor reads packed $W_g$ and $W_u$ rows, applies
+SwiGLU, and accumulates corresponding $W_d$ columns. We tested $B\in
+\{8,16,32,64\}$ during the investigation; the decisive frontier uses B8
+because it preserved the most quality.
+
+\subsection{Selector--executor separation}
+
+Quality uses post-SwiGLU oracle output-contribution scores. These masks answer
+whether a sparsity budget is attainable; they are not deployable predictions.
+Recorded masks are replayed independently through executors. Selector latency
+is therefore excluded and no end-to-end speedup is claimed.
+
+\subsection{Acceptance rule}
+
+The preregistered screening gate accepts a sparse condition when perplexity is
+at most 5\% above the same-run dense result. Runtime speedup is
+$100(t_{dense}/t_{block}-1)$. A model has a verified intersection only if a
+measured sparsity point passes the quality gate and produces a reproducible
+positive runtime speedup.
+
+\subsection{Provenance}
+
+Each result bundle records model revision, source commit, hardware, dtype,
+thread count, seeds, masks, warmups, repetitions, raw retained timings, and
+aggregation. Independent validators check hashes, numerical tolerances,
+condition coverage, and recomputed medians. Generated figures are rebuilt from
+validated manifests rather than manually transcribed values.

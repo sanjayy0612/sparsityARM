@@ -1,0 +1,132 @@
+{
+  "title": "ARM-Sparse quality-latency break-even on Apple M2",
+  "quality_gate_relative_ppl_pct": 5.0,
+  "models": {
+    "Llama 3.2 1B": {
+      "quality": [
+        {
+          "sparsity_pct": 10,
+          "relative_ppl_pct": 2.52003389688229
+        },
+        {
+          "sparsity_pct": 20,
+          "relative_ppl_pct": 8.77260660977328
+        },
+        {
+          "sparsity_pct": 30,
+          "relative_ppl_pct": 20.168090653791857
+        }
+      ],
+      "runtime": [
+        {
+          "sparsity_pct": 10,
+          "mean_speedup_pct": -27.54771170073206,
+          "min_speedup_pct": -28.70559580850299,
+          "max_speedup_pct": -26.812989764448858
+        },
+        {
+          "sparsity_pct": 20,
+          "mean_speedup_pct": -18.646922945675538,
+          "min_speedup_pct": -20.54528117236707,
+          "max_speedup_pct": -15.788902023343642
+        },
+        {
+          "sparsity_pct": 30,
+          "mean_speedup_pct": -10.637488915087179,
+          "min_speedup_pct": -11.718651163744475,
+          "max_speedup_pct": -8.864818824122922
+        },
+        {
+          "sparsity_pct": 40,
+          "mean_speedup_pct": 2.2566184655826493,
+          "min_speedup_pct": 1.634328497597326,
+          "max_speedup_pct": 3.1132457049170448
+        },
+        {
+          "sparsity_pct": 50,
+          "mean_speedup_pct": 20.87295250991876,
+          "min_speedup_pct": 19.08596830307716,
+          "max_speedup_pct": 22.000512727818332
+        },
+        {
+          "sparsity_pct": 60,
+          "mean_speedup_pct": 46.47462858393451,
+          "min_speedup_pct": 44.5988963033088,
+          "max_speedup_pct": 48.02182762789289
+        },
+        {
+          "sparsity_pct": 70,
+          "mean_speedup_pct": 91.17183440042848,
+          "min_speedup_pct": 89.34441415893161,
+          "max_speedup_pct": 93.60165968744852
+        },
+        {
+          "sparsity_pct": 80,
+          "mean_speedup_pct": 185.51756549018475,
+          "min_speedup_pct": 178.5598867420874,
+          "max_speedup_pct": 193.34678806910946
+        }
+      ],
+      "quality_ceiling_pct": 10,
+      "first_speedup_grid_pct": 40
+    },
+    "TinyLlama 1.1B": {
+      "quality": [
+        {
+          "sparsity_pct": 10,
+          "relative_ppl_pct": 1.3356742960029644
+        },
+        {
+          "sparsity_pct": 20,
+          "relative_ppl_pct": 3.1566745997851697
+        },
+        {
+          "sparsity_pct": 30,
+          "relative_ppl_pct": 6.873603200506584
+        }
+      ],
+      "runtime": [
+        {
+          "sparsity_pct": 20,
+          "mean_speedup_pct": -23.70953450609888,
+          "min_speedup_pct": -25.02127253017803,
+          "max_speedup_pct": -21.71728574045818
+        },
+        {
+          "sparsity_pct": 30,
+          "mean_speedup_pct": -15.497932601528138,
+          "min_speedup_pct": -18.69979965314892,
+          "max_speedup_pct": -13.321230214275614
+        },
+        {
+          "sparsity_pct": 40,
+          "mean_speedup_pct": -3.586660942509593,
+          "min_speedup_pct": -5.151894210480812,
+          "max_speedup_pct": -1.1046947031705723
+        },
+        {
+          "sparsity_pct": 50,
+          "mean_speedup_pct": 13.44759571344157,
+          "min_speedup_pct": 10.74485373781149,
+          "max_speedup_pct": 17.091450575975475
+        },
+        {
+          "sparsity_pct": 60,
+          "mean_speedup_pct": 39.92806550136864,
+          "min_speedup_pct": 38.82652986441919,
+          "max_speedup_pct": 42.0854492593105
+        }
+      ],
+      "quality_ceiling_pct": 20,
+      "first_speedup_grid_pct": 50
+    }
+  },
+  "decisive_experiments": [
+    "EXP-004",
+    "EXP-005",
+    "EXP-012",
+    "EXP-016",
+    "EXP-018"
+  ],
+  "conclusion": "No tested model has a verified B8 quality-speed intersection."
+}

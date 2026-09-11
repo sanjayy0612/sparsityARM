@@ -1,0 +1,21 @@
+\section{Introduction}
+
+The FFN sublayer dominates a large fraction of decoder-only transformer
+arithmetic. Contextual sparsity observes that the useful FFN components vary
+with the input, suggesting that inference can skip work. A FLOP count alone is
+not a CPU performance model: selecting individual neurons produces indirect
+accesses, fragmented weight reads, branches, and small operations that compete
+with cache lines, prefetchers, and vector units.
+
+ARM-Sparse studies a specific compromise. Intermediate neurons are partitioned
+into fixed contiguous blocks. A selected block packs corresponding gate and up
+rows with down-projection columns and is reused without per-token repacking.
+The executor may calculate unwanted neurons inside a block, but it obtains
+regular addressing and simpler dispatch. The central hypothesis is that some
+block size can outperform theoretically sparser neuron-level execution.
+
+This report does not present contextual sparsity or neuron grouping as new.
+Its contribution is an evidence-preserving investigation of the joint
+quality--latency break-even on a constrained ARM laptop. The result is
+negative but informative: both tested model geometries reach an executor
+speedup only well beyond their measured quality-compatible sparsity.

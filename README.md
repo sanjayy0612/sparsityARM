@@ -1,99 +1,90 @@
 # ARM-Sparse
 
-ARM-Sparse studies whether input-dependent FFN sparsity can produce actual
-wall-clock inference gains on Apple Silicon CPUs. SOLARIS is the single
-research lead: it plans, implements, measures, validates evidence and controls
-the canonical research state. LUNA may be spawned for bounded scientific-writing
-work, but it neither conducts experiments nor directly controls the manuscript.
+ARM-Sparse is a reproducible investigation of one systems question:
 
-## Current scope
+> Can dynamic FFN block sparsity preserve useful LLM quality **and** beat an
+> optimized dense CPU baseline on an Apple M2?
 
-Development targets the available Apple M2 with 8 GiB RAM. The model ladder is
-synthetic SwiGLU → Llama 3.2 1B → TinyLlama 1.1B → optional Llama 3.2 3B if
-memory and runtime permit. CPU measurements are primary; no GPU is required.
+## Answer from the completed investigation
 
-EXP-001 is complete: native CPU execution for a synthetic 2048 → 8192 → 2048
-FFN, comparing Accelerate dense, irregular skipping, native packed blocks and
-Accelerate packed blocks. Python kernels remain tested correctness references.
-EXP-002 adds verified Llama 3.2 1B activation-mask coverage. Deployable
-selection, real-model sparse execution and hardware-counter profiling have not
-been implemented. EXP-003 now has a quality-evaluation harness, but its real
-corpus and acceptance threshold remain intentionally unapproved. LUNA tooling
-and LaTeX are deferred.
+**Not in the tested configuration.** Packed B8 execution became faster only at
+sparsity levels that failed the pre-registered 5% relative-perplexity gate.
+The project found a real kernel break-even, but no verified quality–speed
+intersection.
 
-## Install and test
+![Quality-speed gap](paper/figures/quality-speed-frontier.svg)
 
-Native benchmarks require macOS 15+ and Xcode command-line tools. Dependencies
-are declared in `pyproject.toml`; the torch extra supports the Python reference
-tests, not full-model loading.
+| Model | Highest measured B8 sparsity passing quality gate | First measured B8 speedup point | Verified overlap |
+|---|---:|---:|:---:|
+| Llama 3.2 1B | 10% | 40% | No |
+| TinyLlama 1.1B | 20% | 50% | No |
+
+This is a bounded negative result, not proof that block sparsity can never
+work. It applies to single-token, one-thread Apple M2 execution; oracle
+output-contribution masks; packed FP32 B8 kernels; and the recorded evaluation
+corpus. Selector cost was excluded.
+
+## Five decisive experiments
+
+- **EXP-004 — Llama quality frontier:** B8 passed at 10% sparsity
+  (+2.520% perplexity) and failed at 20% (+8.773%).
+- **EXP-005 — Real-mask replay:** the quality-compatible Llama B8/10% masks
+  were 37–39% slower than optimized dense execution.
+- **EXP-012 — Llama runtime frontier:** B8 first beat Accelerate dense at the
+  40% measured grid point (+1.6% to +3.1% across three runs).
+- **EXP-016 — TinyLlama validation:** B8 passed at 10% and 20%, then failed at
+  30%; B32 was less quality-efficient.
+- **EXP-018 — TinyLlama runtime frontier:** B8 first beat dense at the 50%
+  measured grid point (+10.7% to +17.1% across three runs).
+
+The other experiments are retained as diagnostics, controls, implementation
+iterations, and quantized-runtime probes. They are not hidden; they simply do
+not carry the main conclusion.
+
+## Reproduce and audit
+
+On the recorded macOS environment, the complete verification command is:
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -e '.[dev,torch]'
-python -m pytest -q
+make verify-package
 ```
 
-## Run the current experiment
+It validates the five core evidence bundles plus supporting production-baseline
+artifacts, regenerates the summary/figures deterministically, and runs the test
+suite. See [REPRODUCING.md](REPRODUCING.md) for setup and boundaries.
 
-```bash
-.venv/bin/python benchmarks/run_exp001.py
-.venv/bin/python research_tools/validate_exp001.py research/results/EXP-001/<run-directory>
-.venv/bin/python research_tools/summarize_exp001.py research/results/EXP-001/<run-directory>
-```
+Generated research outputs:
 
-The runner builds the native library and saves raw timings, weights, masks,
-source snapshots, build settings and environment metadata. See the
-[protocol](research/experiments/EXP-001/protocol.md) for measurement boundaries.
-Large NPZ artifacts stay local and are excluded from Git; preserve them with
-their manifests when archiving results.
+- [Technical report source](paper/main.tex)
+- [Technical report PDF](paper/arm-sparse-report.pdf)
+- [Public technical article](docs/article.md)
+- [Machine-readable summary](research/package/summary.json)
+- [Claim audit](research/package/claim-audit.md)
 
-## Evidence and next step
+## Repository map
 
-Read the [full measured results](research/results/EXP-001/m2-primary-20260906/summary.md)
-and [research assessment](research/experiments/EXP-001/findings.md).
-Some equal-work clustered configurations favored blocks. A repeatable benefit
-while computing additional neurons was not established. These are synthetic
-executor observations, not end-to-end LLM speedups.
+- `armsparse/` — tested Python reference implementations.
+- `cpp/` — native Apple M2 FFN executors.
+- `benchmarks/` — experiment runners.
+- `research/` — protocols, decisions, literature, claims, and immutable results.
+- `research_tools/` — validators and deterministic packaging tools.
+- `paper/` — canonical LaTeX report, figures, tables, and PDF preview.
+- `tests/` — correctness and regression checks.
 
-EXP-002 found that exact expansion of Llama 3.2 1B neuron top-k masks
-erases essentially all sparsity at B=8–64. The next decision is a quality
-protocol for direct block-aware masks. The EXP-003 implementation compares
-dense, neuron top-k, block top-k and random-block controls, but it is not a
-speed benchmark. Its first 30%-sparsity screening run found that neuron top-k
-met the 5% perplexity gate, while B8/B16/B32/B64 activation-sum block masks did
-not. Hypotheses and evidence-backed observations are tracked
-in [research state](research/project.yaml), [hypotheses](research/hypotheses.yaml)
-and [claims](research/claims.yaml).
+## Research interpretation
 
-EXP-004 implements weight-aware and isolated output-contribution block scores
-for B8/B16 quality screening. Its staged oracle run found that B8 at 10%
-sparsity met the 5% perplexity gate; B16/10% narrowly missed and all tested
-20–30% configurations failed.
+The useful result is the measured mismatch: blockification can reduce kernel
+latency, but the tested models lost acceptable quality before enough work was
+removed. Future work should target the quality frontier—through training-aware
+block structure or a selector/layout co-design—not more micro-optimization of
+the current B8 oracle-mask executor.
 
-EXP-005 replayed the quality-compatible B8/10% masks through the standalone M2
-executor. The native block kernel was 37–39% slower than optimized dense in all
-three runs, so this configuration does not provide a speedup.
+The project is informed by contextual-sparsity and memory-layout work including
+DejaVu, LLM in a Flash, PowerInfer, PowerInfer-2, and Dynamic Input Pruning. It
+does not claim to invent contextual sparsity or neuron grouping.
 
-EXP-006 implements fixed per-layer neuron reordering learned only from EXP-002
-calibration activations. Its deterministic LSH layout improved matched B8/B16
-quality slightly, but no held-out 20–30% configuration met the 5% perplexity
-gate.
+## AI assistance
 
-## Repository
-
-- `armsparse/`: Python reference kernels, masks and tested reference runtime.
-- `cpp/`: native CPU executors.
-- `benchmarks/`: EXP-001 runner and native bridge; `results/` preserves legacy measurements.
-- `research_tools/`: ordinary experiment validation and result-aggregation scripts.
-- `research/`: protocols, decisions, hypotheses, claims and measured artifacts.
-- `tests/`: reference and native correctness checks.
-
-Historical experiment source snapshots remain immutable inside result bundles.
-They document what actually ran and are not active implementation entry points.
-
-## Attribution
-
-The project is informed by DejaVu, LLM in a Flash and NimbleEdge
-`sparse_transformers`. It does not claim to invent contextual sparsity.
-Novelty and publication claims require further verified literature and evidence.
+SOLARIS/Codex assisted with implementation, experiment execution, validation,
+analysis, and writing. All quantitative statements in the package are derived
+from committed artifacts; AI-generated prose is not treated as evidence.

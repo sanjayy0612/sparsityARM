@@ -1,0 +1,37 @@
+\section{Discussion}
+
+The executor result supports a narrow systems observation: contiguous packed
+blocks can outperform optimized dense execution once enough blocks are
+removed. It rejects the stronger project goal for the tested setup because the
+models stop meeting the quality gate much earlier. The direction did not drift;
+it progressively isolated why theoretical sparsity did not become useful
+latency.
+
+Several attempted remedies did not close the gap. Calibration-only LSH and
+hot/cold reorderings improved some block retention or perplexity but did not
+make 20--30\% Llama conditions pass. Direct NEON and coalesced Accelerate
+variants were slower than the existing native B8 implementation. Custom INT8
+experiments won against weak matched INT8 controls but not against the strong
+FP32 Accelerate latency, while a minimal llama.cpp Q8$_0$ B32 probe did not
+reliably cross dense parity through 80\%. These negative controls discourage
+presenting backend tuning as the missing scientific contribution.
+
+\subsection{Threats to validity}
+
+The quality screen is small and uses perplexity rather than downstream task
+accuracy. Oracle contribution scoring reads information unavailable to a
+deployable predictor. Runtime masks are favorable and synthetic. Measurements
+cover one CPU, one thread, one token, FP32 kernel arithmetic, and only two FFN
+geometries. Reported ranges are repeated-run observations, not confidence
+intervals. These constraints limit generalization but make the bounded
+conclusion auditable.
+
+\subsection{Next research question}
+
+The evidence shifts the bottleneck from execution toward representation. A
+credible continuation must move the quality frontier from 10--20\% toward the
+40--50\% mechanical break-even. Training-aware block activation, joint
+selector/layout learning, or architectures with native grouped FFNs are more
+plausible than another local kernel micro-optimization. Any continuation should
+pre-register a stop condition and compare with modern dense and sparse ARM
+baselines.

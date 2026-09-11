@@ -1,0 +1,46 @@
+\section{Results}
+
+\begin{figure*}[t]
+\centering
+\includesvg[width=0.88\textwidth]{figures/quality-vs-sparsity}
+\caption{Relative perplexity increase for output-contribution B8 masks. The
+dashed line is the preregistered 5\% gate.}
+\label{fig:quality}
+\end{figure*}
+
+Llama B8 at 10\% increased perplexity by 2.520\% and passed. At 20\% it
+increased by 8.773\% and failed. TinyLlama passed at 10\% and 20\%, with
+increases of 1.336\% and 3.157\%, then failed at 30\% with 6.874\%. TinyLlama
+B32 passed only at 10\%, showing that larger contiguous units worsened the
+quality tradeoff in this screen.
+
+\begin{figure*}[t]
+\centering
+\includesvg[width=0.88\textwidth]{figures/speedup-vs-sparsity}
+\caption{Mean B8 FFN speedup over Accelerate dense. Points summarize three
+runs; raw per-run medians and ranges remain in the result bundles.}
+\label{fig:speed}
+\end{figure*}
+
+For the Llama geometry, native B8 remained 8.9--11.7\% slower at 30\% and
+first became faster at the 40\% grid point, by 1.6--3.1\%. TinyLlama B8
+remained 1.1--5.2\% slower at 40\% and first won at 50\%, by 10.7--17.1\%.
+The exact crossovers were not interpolated.
+
+At the real-mask Llama B8/10\% quality-compatible condition, packed block
+execution was 37.26--38.77\% slower than Accelerate dense. Thus the observed
+mechanical speedups do not transfer to the accepted quality region.
+
+\begin{figure*}[t]
+\centering
+\includesvg[width=0.88\textwidth]{figures/quality-speed-frontier}
+\caption{The quality ceiling and first measured speedup point do not overlap
+for either model.}
+\label{fig:frontier}
+\end{figure*}
+
+\begin{table}[h]
+\centering
+\caption{Measured quality--speed frontier for B8.}
+\input{tables/key-results}
+\end{table}

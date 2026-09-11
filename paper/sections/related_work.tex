@@ -1,0 +1,17 @@
+\section{Related Work}
+
+DejaVu introduced input-dependent predictors for contextual sparsity in
+transformer MLP and attention components~\cite{dejavu}. LLM in a Flash showed
+that storage-aware inference benefits from loading larger contiguous bundled
+rows and columns rather than many fragmented pieces~\cite{llmflash}. That
+observation motivates ARM-Sparse's layout hypothesis, although our weights
+remain in RAM and our objective is CPU latency rather than model capacity.
+
+PowerInfer uses hot/cold neuron locality to divide sparse inference work across
+consumer CPU and GPU resources~\cite{powerinfer}. PowerInfer-2 elevates neuron
+clusters to scheduling and storage units on smartphones~\cite{powerinfer2}, so
+clustered execution itself is prior art. Dynamic Input Pruning jointly studies
+SwiGLU pruning and cache-aware masks on resource-constrained hardware
+~\cite{dip}. ARM-Sparse differs by holding hardware, mask budgets, and executor
+comparisons fixed to measure where contiguous blocks cross both a quality gate
+and a strong Apple CPU dense baseline.

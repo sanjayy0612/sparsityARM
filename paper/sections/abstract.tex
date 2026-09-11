@@ -1,0 +1,15 @@
+\begin{abstract}
+Dynamic feed-forward-network (FFN) sparsity removes arithmetic, but irregular
+indexing and memory access can erase the expected CPU speedup. ARM-Sparse asks
+whether deliberately executing contiguous neuron blocks can trade some
+mathematical sparsity for higher Apple M2 hardware efficiency. We separate
+oracle mask quality from replayed executor latency and compare packed B8
+execution with an optimized Accelerate dense baseline for Llama 3.2 1B and
+TinyLlama 1.1B geometries. Llama's highest measured quality-compatible point
+was 10\% sparsity while its first measured runtime win was 40\%; TinyLlama's
+corresponding points were 20\% and 50\%. Thus, block execution accelerated the
+isolated FFN at high sparsity, but no tested configuration simultaneously met
+the 5\% relative-perplexity gate and beat dense execution. This bounded
+negative result localizes the remaining problem in block-compatible model
+quality rather than executor mechanics alone.
+\end{abstract}
