@@ -1,0 +1,121 @@
+\section{Why the Gains Are Small}
+\label{sec:analysis}
+
+\subsection{A first-order bandwidth model}
+
+At batch size one each FFN weight is used once per token, so latency is
+governed mainly by how quickly weights are streamed. The FP32 Llama FFN holds
+$3\cdot2048\cdot8192\cdot4\,\text{B}=201.3$\,MB per layer, far larger than the
+on-chip caches; the dense median of 4.01--4.13\,ms (EXP-005) corresponds to an
+effective 49--50\,GB/s. The TinyLlama FFN (138.4\,MB) ran in 2.64--2.69\,ms
+(EXP-017), or 51--52\,GB/s. Both are about half of M2's specified peak
+bandwidth and roughly constant across geometries. These are derived
+estimates; we did not measure memory-system counters.
+
+Suppose a sparse executor streams its active weights at a fraction $\rho$ of
+the dense rate. Then $t_{\text{sparse}}(s)=(1-s)\,t_{\text{dense}}/\rho$ and
+\begin{equation}
+\text{speedup}(s)=\frac{\rho}{1-s}-1,\qquad s^{*}=1-\rho,
+\label{eq:model}
+\end{equation}
+where $s^{*}$ is the break-even sparsity. Inverting the measurements,
+$\rho=(1-s)(1+\text{speedup})$, gives a direct efficiency estimate at every
+grid point.
+
+\paragraph{Packed B8.} $\rho$ is 0.65 at 10\% falling to 0.57 at 80\% for
+Llama, and 0.61 at 20\% falling to 0.56 at 60\% for TinyLlama. The
+lowest-sparsity values predict break-even near 35\% and 39\%, inside the
+measured Llama interval $(30\%,40\%]$ and just below the TinyLlama interval
+$(40\%,50\%]$. Because $\rho$ falls with sparsity, these predictions are lower
+bounds rather than precise estimates.
+
+\paragraph{Per-neuron.} On the same masks, $\rho$ is 0.92--0.97 at Llama
+B8/10\% (0.91--0.93 on real masks) and 0.84--0.86 at TinyLlama B8/20\%. The
+per-neuron executor is thus nearly as efficient as vendor GEMV per byte.
+
+\subsection{Why the packed layout is slow}
+
+The two sparse executors perform identical arithmetic but traverse the down
+projection differently. The packed $[M,h,B]$ layout turns each active block
+into $h=2048$ dot products of length 8, each updating one output element,
+whereas the neuron-major layout turns each active neuron into one long,
+contiguous scaled-row addition that vectorizes well. Profiling (EXP-009)
+attributes 59\% of packed-B8 time to the down projection. Explicit NEON
+intrinsics for the short dot products were slower still (EXP-010). This
+explanation is consistent with the measurements but is an interpretation; we
+did not collect hardware counters.
+
+\subsection{The ceiling on any kernel}
+
+Equation~\ref{eq:model} also bounds what any kernel can achieve. Even a perfect
+executor ($\rho=1$) at the quality ceiling $s_q$ saves only $s_q$ of the
+bytes, a speedup of $1/(1-s_q)-1$: 11.1\% for Llama ($s_q=10\%$) and 25\% for
+TinyLlama ($s_q=20\%$). The per-neuron executor already captures 2.6--7.3 of
+Llama's possible 11.1 points and 5.1--7.3 of TinyLlama's 25. The FFN is only
+part of token latency, so the end-to-end gain would be smaller still, and a
+deployable selector must cost less than this margin. Larger gains therefore
+require moving the \emph{quality} ceiling, not the kernel.
+
+\subsection{Supporting experiments}
+\label{sec:supporting}
+
+Table~\ref{tab:supporting} summarizes the thirteen experiments that do not
+enter the headline frontier but constrain its interpretation. Three findings
+matter most. First, naively expanding neuron-level masks to blocks is not
+viable: at B8, 40\% neuron sparsity left a mean of only 0.066\% block sparsity
+because almost every block contains at least one selected neuron, and a random
+neuron permutation gave the same result, so model neuron order carries no
+useful contiguity. Second, cheap reorderings fitted on four calibration
+prompts help on held-out prompts but not enough: a hot/cold layout reduced
+Llama B8/20\% perplexity increase from +8.77\% to +6.80\%, still above the
+gate. Third, alternative packed-B8 implementations were slower: explicit NEON
+by 3.6--6.7\% and coalescing contiguous active runs into BLAS calls by
+28--30\%. Quantized dense execution raises the bar further: a matched
+llama.cpp~\cite{llamacpp} Q8\_0 (8-bit) dense FFN with the Llama geometry ran
+in 1.3--1.5\,ms, and a minimal Q8\_0 B32 group-skipping path did not
+reliably beat it even at 80\% sparsity.
+
+\begin{table*}[t]
+\centering
+\caption{Supporting experiments. All use the same hardware, provenance
+checks, and validators as the decisive experiments. Speedups use the paper's
+metric $t_{\text{dense}}/t_{\text{sparse}}-1$.}
+\label{tab:supporting}
+\small
+\begin{tabular}{@{}lp{0.33\textwidth}p{0.49\textwidth}@{}}
+\toprule
+ID & Question & Observation \\
+\midrule
+EXP-001 & Do blocks beat per-neuron execution at equal work (synthetic)? &
+  Some block configurations were faster, but none beat per-neuron execution in
+  every run while computing extra neurons. Per-neuron execution on scattered
+  masks was usually slower than dense. \\
+EXP-002 & Can real neuron masks be expanded to blocks? &
+  No: B8 kept 0.0002--0.066\% block sparsity at 20--40\% neuron sparsity;
+  B32/B64 kept exactly 0\%. A random permutation gave the same result. \\
+EXP-003 & Does activation-sum block scoring preserve quality? &
+  Neuron top-$k$ 30\%: +0.21\%. B8--B64 at 30\%: +21.3\% to +78.4\%. \\
+EXP-006 & Does a locality-sensitive-hashing (LSH) co-activation layout help? &
+  Improved every matched B8/B16 point (e.g.\ B8/20\% +8.56\%) but none passed. \\
+EXP-007/008 & Does hot/cold neuron ordering (fit on 4 prompts) help? &
+  Best layout tested (B8/20\% +6.80\%, B8/30\% +15.58\%), still failing. \\
+EXP-009 & Where does packed-B8 time go? &
+  Down projection 59\%, gate/up/SwiGLU 41\%, mask scan 0.02\%. Staged
+  execution was 7.9--10.5\% slower than interleaved. \\
+EXP-010 & Does explicit NEON help packed B8? &
+  3.6--6.7\% slower than the auto-vectorized kernel. \\
+EXP-011 & Does coalescing active runs into BLAS calls help? &
+  28--30\% slower (median 93 runs, $\approx$279 small calls per FFN). \\
+EXP-013 & Does a custom INT8 kernel move the break-even? &
+  B8 beats matched custom INT8 dense from 10\%, but that dense kernel
+  (6.8--7.3\,ms) is far slower than FP32 Accelerate ($\approx$4\,ms). \\
+EXP-014 & Strong quantized dense baseline? &
+  llama.cpp Q8\_0, CPU only: 125\,tok/s prefill, 40\,tok/s generation. \\
+EXP-015 & Does Q8\_0-aligned B32 skipping help? &
+  No reproducible speedup at 10--80\%; $-58\%$ to $-57\%$ at 10\%. \\
+EXP-017 & Is TinyLlama B8/20\% fast with packed B8? &
+  FP32: $-24.5\%$ to $-20.2\%$ (a separate run from EXP-018). Custom INT8 B8
+  beats matched INT8 dense but not FP32 dense. \\
+\bottomrule
+\end{tabular}
+\end{table*}

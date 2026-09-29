@@ -1,37 +1,67 @@
 \section{Discussion}
 
-The executor result supports a narrow systems observation: contiguous packed
-blocks can outperform optimized dense execution once enough blocks are
-removed. It rejects the stronger project goal for the tested setup because the
-models stop meeting the quality gate much earlier. The direction did not drift;
-it progressively isolated why theoretical sparsity did not become useful
-latency.
+\paragraph{What the evidence supports.} On equal-work block-aligned masks,
+packed B8 execution overtakes Accelerate dense only at 40--50\% sparsity,
+well beyond what the tested models tolerate. The same masks executed
+neuron-by-neuron with neuron-major weights are faster than dense at the
+quality ceiling, by a few percent. Block alignment is therefore useful on this
+CPU, but its value comes from keeping active weights in long contiguous runs,
+not from packing blocks into short tiles. The quality ceiling, not kernel
+efficiency, limits the achievable gain: at 10--20\% sparsity even a perfect
+kernel could save only 11--25\% of FFN time.
 
-Several attempted remedies did not close the gap. Calibration-only LSH and
-hot/cold reorderings improved some block retention or perplexity but did not
-make 20--30\% Llama conditions pass. Direct NEON and coalesced Accelerate
-variants were slower than the existing native B8 implementation. Custom INT8
-experiments won against weak matched INT8 controls but not against the strong
-FP32 Accelerate latency, while a minimal llama.cpp Q8$_0$ B32 probe did not
-reliably cross dense parity through 80\%. These negative controls discourage
-presenting backend tuning as the missing scientific contribution.
+\paragraph{Where the bottleneck is.} The structure tax in
+Section~\ref{sec:quality}---a 30\% budget costs 0.2--0.3\% perplexity at
+neuron granularity but 6.9--20.2\% at B8---shows that the missing ingredient is
+a \emph{representation} in which useful neurons are contiguous. Post-hoc
+reordering moved the quality frontier only slightly. More plausible routes are
+training-time or fine-tuning methods that make activations block-sparse by
+construction, such as natively trained mixture-of-experts (MoE) FFNs,
+ReLU-restoring fine-tuning~\cite{relustrikes}, or joint selector and layout
+learning. Any such continuation should be compared against quantized dense
+baselines, which are already roughly three times faster than FP32 here.
+
+\paragraph{On reporting negative results.} Fixing the quality gate and grids
+in version control before running each experiment~\cite{prereg} prevented
+the gate from being loosened once results were known, and retaining every
+completed experiment, including failed variants, in the artifact lets readers
+verify that the headline result is not the product of selective reporting.
+The per-neuron finding itself was already present in the recorded data; it
+became visible only when every executor in the artifact was compared against
+the quality frontier, which is an argument for releasing all raw results.
 
 \subsection{Threats to validity}
 
-The quality screen is small and uses perplexity rather than downstream task
-accuracy. Oracle contribution scoring reads information unavailable to a
-deployable predictor. Runtime masks are favorable and synthetic. Measurements
-cover one CPU, one thread, one token, FP32 kernel arithmetic, and only two FFN
-geometries. Reported ranges are repeated-run observations, not confidence
-intervals. These constraints limit generalization but make the bounded
-conclusion auditable.
+\begin{itemize}
+\setlength\itemsep{1pt}
+\item \textbf{Small quality screen.} 16 excerpts and 2,032 tokens, perplexity
+  only, no downstream tasks. Exact ceilings may shift with a larger corpus.
+\item \textbf{Oracle masks.} Selection reads dense activations that a
+  deployable predictor cannot see, so real predictors are expected to do
+  worse. The score ranks blocks independently, however, so a better subset
+  could exist; we do not claim the oracle is optimal.
+\item \textbf{Synthetic runtime masks and weights.} Break-even sweeps use random
+  block-aligned masks and random weights. At Llama B8/10\% they agreed with
+  real masks for packed B8; real masks gave a smaller per-neuron gain
+  (0.9--3.5\% versus 2.6--7.3\%). This was not checked at other sparsities or
+  for TinyLlama.
+\item \textbf{Uncontrolled system state.} macOS does not allow pinning a thread
+  to a performance core, and we did not control frequency, thermal state, or
+  power source. Dense medians varied by up to 17\% across EXP-012 cases.
+  Randomized executor order limits bias between executors but not
+  run-to-run variation.
+\item \textbf{Narrow hardware scope.} One Apple M2, one thread, one token, FP32
+  kernels, two FFN geometries. Multi-threaded, batched, or GPU/NPU execution
+  may behave differently.
+\item \textbf{Statistics.} Reported ranges are across three repeated runs, not
+  confidence intervals. The smallest positive result (0.9\% on real masks) is
+  within plausible run-to-run noise even though it was positive in every run.
+\end{itemize}
 
-\subsection{Next research question}
+\subsection{Reproducibility}
 
-The evidence shifts the bottleneck from execution toward representation. A
-credible continuation must move the quality frontier from 10--20\% toward the
-40--50\% mechanical break-even. Training-aware block activation, joint
-selector/layout learning, or architectures with native grouped FFNs are more
-plausible than another local kernel micro-optimization. Any continuation should
-pre-register a stop condition and compare with modern dense and sparse ARM
-baselines.
+The artifact contains source code, pinned model revisions, raw per-sample
+timings, per-record log-likelihoods, manifests with hashes, independent
+validators, and the scripts that regenerate the main figures and tables in
+this paper. The committed result package can be validated without downloading
+either model.

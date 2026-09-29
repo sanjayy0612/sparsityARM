@@ -1,0 +1,20 @@
+% Values match tables/key-results.tex (quality ceiling, first speedup grid point).
+\begin{tikzpicture}[x=0.095\columnwidth, y=1cm, font=\footnotesize]
+\foreach \t in {0,10,...,60} {
+  \draw[gray!25] (\t/10*1.2,-0.35) -- (\t/10*1.2,2.0);
+  \node[gray!70!black, below] at (\t/10*1.2,-0.35) {\t\%};
+}
+\node[below=12pt] at (3.6,-0.35) {B8 block sparsity};
+% Llama 3.2 1B: 10% -> 40%
+\draw[gray!60, line width=3pt] (1.2,1.4) -- (4.8,1.4);
+\fill[pass] (1.2,1.4) circle (4pt); \fill[fail] (4.8,1.4) circle (4pt);
+\node[left, font=\footnotesize\bfseries] at (0,1.4) {Llama};
+\node[above=3pt, pass!70!black] at (1.2,1.4) {10\%};
+\node[above=3pt, fail!70!black] at (4.8,1.4) {40\%};
+% TinyLlama 1.1B: 20% -> 50%
+\draw[gray!60, line width=3pt] (2.4,0.4) -- (6.0,0.4);
+\fill[pass] (2.4,0.4) circle (4pt); \fill[fail] (6.0,0.4) circle (4pt);
+\node[left, font=\footnotesize\bfseries] at (0,0.4) {TinyLlama};
+\node[above=3pt, pass!70!black] at (2.4,0.4) {20\%};
+\node[above=3pt, fail!70!black] at (6.0,0.4) {50\%};
+\end{tikzpicture}

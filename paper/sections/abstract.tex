@@ -1,15 +1,22 @@
 \begin{abstract}
-Dynamic feed-forward-network (FFN) sparsity removes arithmetic, but irregular
-indexing and memory access can erase the expected CPU speedup. ARM-Sparse asks
-whether deliberately executing contiguous neuron blocks can trade some
-mathematical sparsity for higher Apple M2 hardware efficiency. We separate
-oracle mask quality from replayed executor latency and compare packed B8
-execution with an optimized Accelerate dense baseline for Llama 3.2 1B and
-TinyLlama 1.1B geometries. Llama's highest measured quality-compatible point
-was 10\% sparsity while its first measured runtime win was 40\%; TinyLlama's
-corresponding points were 20\% and 50\%. Thus, block execution accelerated the
-isolated FFN at high sparsity, but no tested configuration simultaneously met
-the 5\% relative-perplexity gate and beat dense execution. This bounded
-negative result localizes the remaining problem in block-compatible model
-quality rather than executor mechanics alone.
+Dynamic feed-forward-network (FFN) sparsity skips neurons that contribute
+little to the current token, but on CPUs the irregular memory access of
+neuron-level masks can erase the expected speedup. A common compromise is to
+skip fixed contiguous \emph{blocks} of neurons. We ask whether block sparsity
+can both preserve model quality and beat an optimized dense baseline on an
+Apple M2 CPU, measuring the two separately: how much oracle-selected block
+sparsity a model tolerates under a pre-specified 5\% relative-perplexity gate,
+and how fast the resulting masks execute against Apple Accelerate. Blocks of
+eight neurons (B8) passed the gate only up to 10\% sparsity for Llama 3.2 1B
+and 20\% for TinyLlama 1.1B. A packed B8 executor was 27--28\% slower than
+dense at the passing Llama point and first won only at 40--50\% sparsity, so it
+has no quality--speed intersection. The same block-aligned masks run through a
+simple per-neuron executor with neuron-major weights, however, were faster
+than dense at the quality ceiling: by 0.9--3.5\% on real Llama masks and
+2.6--7.3\% (Llama) and 5.1--7.3\% (TinyLlama) on synthetic ones. Block
+alignment therefore helps, but through memory layout rather than packed block
+kernels, and the quality ceiling caps the achievable gain at 11\% and 25\% of
+FFN time even for a perfect kernel. Thirteen supporting experiments on
+layouts, SIMD, coalescing, and quantized paths, together with all raw
+evidence, are released for reproduction.
 \end{abstract}

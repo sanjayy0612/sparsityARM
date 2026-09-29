@@ -1,14 +1,29 @@
 \documentclass[10pt,twocolumn]{article}
 \usepackage[margin=0.72in]{geometry}
+\usepackage[T1]{fontenc}
 \usepackage{booktabs}
 \usepackage{graphicx}
-\usepackage{svg}
 \usepackage{microtype}
-\usepackage{amsmath}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.17}
+\usetikzlibrary{arrows.meta}
 \usepackage[hidelinks]{hyperref}
-\title{ARM-Sparse: A Reproducible Investigation of the Quality--Latency Break-Even for Dynamic FFN Block Sparsity on Apple M2}
-\author{Sanjay Elango}
+
+\definecolor{llama}{HTML}{2563EB}
+\definecolor{tinyllama}{HTML}{E11D48}
+\definecolor{pass}{HTML}{16A34A}
+\definecolor{fail}{HTML}{DC2626}
+
+\title{ARM-Sparse: A Reproducible Investigation of the Quality--Latency
+Break-Even for Dynamic FFN Block Sparsity on Apple M2}
+\author{Sanjay Elango\thanks{Code, raw measurements, validators, and manuscript
+sources: \url{https://github.com/sanjayy0612/sparsityARM}}\\
+Chennai Institute of Technology, Chennai, India\\
+\texttt{sanjayelango06@gmail.com}}
 \date{Technical report, September 2026}
+
 \begin{document}
 \maketitle
 \input{sections/abstract}
@@ -17,6 +32,7 @@
 \input{sections/methodology}
 \input{sections/experiments}
 \input{sections/results}
+\input{sections/analysis}
 \input{sections/discussion}
 \input{sections/conclusion}
 \bibliographystyle{plain}

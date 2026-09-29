@@ -1,21 +1,56 @@
 \section{Introduction}
 
-The FFN sublayer dominates a large fraction of decoder-only transformer
-arithmetic. Contextual sparsity observes that the useful FFN components vary
-with the input, suggesting that inference can skip work. A FLOP count alone is
-not a CPU performance model: selecting individual neurons produces indirect
-accesses, fragmented weight reads, branches, and small operations that compete
-with cache lines, prefetchers, and vector units.
+Batch-one token generation on laptops and phones is dominated by reading
+weights. In decoder-only transformers the feed-forward network (FFN) holds
+roughly 80\% of each layer's parameters in the models we study, so reading
+fewer FFN weights per token is an attractive target. Contextual sparsity work
+observes that, for any given input, many FFN neurons contribute little to the
+output and could in principle be skipped~\cite{dejavu,lazyneuron}. Recent
+training-free methods report that large fractions of SwiGLU~\cite{glu}
+activations can be zeroed with modest quality loss~\cite{cats,teal}.
 
-ARM-Sparse studies a specific compromise. Intermediate neurons are partitioned
-into fixed contiguous blocks. A selected block packs corresponding gate and up
-rows with down-projection columns and is reused without per-token repacking.
-The executor may calculate unwanted neurons inside a block, but it obtains
-regular addressing and simpler dispatch. The central hypothesis is that some
-block size can outperform theoretically sparser neuron-level execution.
+A FLOP count is not a CPU performance model, however. Selecting individual
+neurons produces scattered weight reads and per-neuron dispatch that compete
+with cache lines, hardware prefetchers, and vector (SIMD) units, whereas a
+dense matrix--vector product (GEMV) streams weights sequentially through a
+heavily tuned vendor library. A common response is to impose structure:
+partition the intermediate dimension into fixed contiguous blocks of $B$
+neurons and skip whole blocks, computing some unnecessary neurons in exchange
+for regular memory access. Clustered execution units already appear in
+storage- and scheduler-oriented systems~\cite{llmflash,powerinfer2}. What is
+less often reported is whether a block granularity can satisfy a quality
+constraint and a strong dense latency baseline \emph{at the same time}, on the
+same hardware.
 
-This report does not present contextual sparsity or neuron grouping as new.
-Its contribution is an evidence-preserving investigation of the joint
-quality--latency break-even on a constrained ARM laptop. The result is
-negative but informative: both tested model geometries reach an executor
-speedup only well beyond their measured quality-compatible sparsity.
+We answer that question for one constrained setting: a single-threaded Apple
+M2 laptop CPU running the FFNs of Llama 3.2 1B and TinyLlama 1.1B. The design
+deliberately favors sparsity---oracle masks, no selector cost, and FFN-only
+timing---so that a failure is informative. Our main findings are that
+(i) block structure costs far more quality than sparsity itself;
+(ii) a packed block executor never reaches a quality-compatible speedup; but
+(iii) the same block-aligned masks executed by a simple per-neuron kernel with
+neuron-major weights do beat dense, by a few percent, at the quality ceiling.
+
+\paragraph{Contributions.}
+\begin{itemize}
+\setlength\itemsep{1pt}
+\item A separated protocol that measures block-sparse \emph{quality} (oracle
+  masks, pre-specified perplexity gate) and \emph{latency} (replayed masks,
+  vendor-BLAS dense baseline) independently, then intersects them.
+\item A \emph{structure tax} measurement: at 30\% sparsity, neuron-level oracle
+  masks cost 0.2--0.3\% perplexity while contiguous B8 blocks cost 6.9--20.2\%,
+  and naively expanding neuron masks to blocks removes virtually all sparsity.
+\item A two-executor latency frontier on identical masks: packed B8 first beats
+  dense at 40--50\% sparsity, beyond the 10--20\% quality ceiling, while a
+  per-neuron executor is faster than dense at every measured block-aligned
+  sparsity, including the quality ceiling.
+\item A first-order bandwidth model showing that, at the quality ceiling, even a
+  perfect kernel could save at most 11\% (Llama) or 25\% (TinyLlama) of FFN
+  time, which bounds the value of any block-sparse kernel in this regime.
+\item Thirteen supporting experiments and a reproducible artifact with raw
+  timings, hashes, and independent validators.
+\end{itemize}
+
+We do not claim novelty for contextual sparsity, neuron grouping, or weight
+packing. The contribution is a carefully bounded, reproducible measurement of
+where block sparsity does and does not pay off on one ARM laptop CPU.

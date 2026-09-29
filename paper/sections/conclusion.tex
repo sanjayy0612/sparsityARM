@@ -1,11 +1,13 @@
 \section{Conclusion}
 
-ARM-Sparse investigated whether contiguous FFN blocks convert dynamic
-sparsity into practical Apple M2 CPU speedups. Blocks did accelerate isolated
-FFN execution at sufficiently high sparsity. However, Llama 3.2 1B and
-TinyLlama 1.1B both crossed their quality limits 30 percentage points before
-their first measured speedup points. Under the recorded conditions, block-based
-sparsity therefore did not produce a verified quality-preserving wall-clock
-gain. The complete negative result, raw artifacts, validators, figures, and
-manuscript sources are retained for reproduction and for testing future methods
-that explicitly create block-compatible model structure.
+We asked whether contiguous FFN blocks can turn dynamic sparsity into
+practical CPU speedups on an Apple M2 without unacceptable quality loss.
+Llama 3.2 1B and TinyLlama 1.1B tolerate only 10--20\% B8 block sparsity under
+a 5\% perplexity gate. A packed block executor needs 40--50\% sparsity to beat
+dense, so it never reaches a useful operating point, but a per-neuron executor
+with neuron-major weights runs the same block-aligned masks faster than dense
+at the quality ceiling, by a few percent. On this hardware, block alignment
+helps through memory layout rather than packed kernels, and the quality
+ceiling caps the possible FFN gain at 11--25\%. The main obstacle to larger
+gains is block-compatible model representation. We release the complete
+evidence as a baseline for methods that train block-compatible structure.

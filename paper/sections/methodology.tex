@@ -1,34 +1,98 @@
-\section{Methodology}
+\section{Method}
 
-For an input $x$, a SwiGLU FFN computes
+\subsection{Block-sparse SwiGLU FFN}
+
+For a token representation $x\in\mathbb{R}^{h}$, a SwiGLU FFN with
+intermediate width $m$ computes
 \begin{equation}
-y=W_d\left(\operatorname{SiLU}(W_gx)\odot W_ux\right).
+y=W_d\,a,\qquad a=\operatorname{SiLU}(W_gx)\odot W_ux,
 \end{equation}
-We divide the intermediate dimension into groups of $B$ adjacent neurons. For
-each active group, the executor reads packed $W_g$ and $W_u$ rows, applies
-SwiGLU, and accumulates corresponding $W_d$ columns. We tested $B\in
-\{8,16,32,64\}$ during the investigation; the decisive frontier uses B8
-because it preserved the most quality.
+with $W_g,W_u\in\mathbb{R}^{m\times h}$ and $W_d\in\mathbb{R}^{h\times m}$. We
+partition the $m$ intermediate neurons into $M=m/B$ groups of $B$ adjacent
+neurons. For block $b$ with activations $a_b\in\mathbb{R}^{B}$ and
+down-projection columns $W_{d,b}\in\mathbb{R}^{h\times B}$, the FFN output is
+$y=\sum_b W_{d,b}a_b$. A block-sparse FFN with active set $\mathcal{A}$ computes
+only $\hat y=\sum_{b\in\mathcal{A}}W_{d,b}a_b$. Block sparsity $s$ is the
+fraction of blocks skipped, so $|\mathcal{A}|=(1-s)M$. We write B8 for $B=8$
+and, for example, B8/20\% for B8 at 20\% block sparsity. We tested
+$B\in\{8,16,32,64\}$ during the investigation; the frontier uses B8 because it
+preserved the most quality.
+
+\subsection{Oracle block selection}
+
+To measure whether a sparsity budget is \emph{attainable} at all, we select
+blocks with an oracle that observes the dense post-SwiGLU activations of the
+current token and layer. An initial screen (EXP-003) ranked blocks by summed
+absolute activation; all frontier results use the output contribution norm
+\begin{equation}
+\text{score}(b)=\lVert W_{d,b}\,a_b\rVert_2^2 = a_b^{\top}\bigl(W_{d,b}^{\top}W_{d,b}\bigr)a_b,
+\end{equation}
+computed exactly from a precomputed $B\times B$ Gram matrix per block. The
+top-scoring $(1-s)M$ blocks are kept independently for every token and every
+FFN layer. The score ignores interactions between blocks, so it is a strong
+reference rather than the optimal subset, which is combinatorial. Because it
+reads information unavailable before the FFN runs, it is a favorable
+reference for what a deployable predictor could achieve, not a predictor.
+Neuron-level comparisons use the analogous top-$k$ over individual absolute
+activations.
+
+\subsection{Executors}
+
+All three executors compute the same SwiGLU FFN and differ only in which
+weights they read and how those weights are laid out.
+
+\paragraph{Dense baseline.} Three single-precision matrix--vector products via
+Apple Accelerate (\texttt{cblas\_sgemv}) with a SwiGLU loop between them. We
+chose Apple's tuned vendor BLAS to avoid a weak comparator; we did not
+benchmark other dense paths such as BNNS. Accelerate may internally use
+Apple's undocumented matrix coprocessor; we treat it as a black box.
+
+\paragraph{Packed B8 executor.} Gate and up rows of a block are contiguous in
+row-major storage; down-projection columns are repacked offline into a
+$[M,h,B]$ tile layout so that each block's down weights are contiguous. For
+each active block the executor computes $B$ gate and up dot products, applies
+SwiGLU, and accumulates the $h\times B$ down tile into the output as $h$ dot
+products of length $B$ (interleaved execution).
+
+\paragraph{Per-neuron executor.} Down weights are stored neuron-major,
+$[m,h]$, so each neuron's gate, up, and down weights are each one contiguous
+row of $h$ values. For each active neuron the executor computes two length-$h$
+dot products, applies SwiGLU, and adds a length-$h$ scaled row to the output.
+Given a block mask it performs exactly the same arithmetic as the packed B8
+executor; on B8-aligned masks, neuron-major storage is equivalent to a
+$[M,B,h]$ block layout.
+
+Custom kernels are C++ compiled with \texttt{clang++ -O3} and rely on compiler
+auto-vectorization (NEON); allocation and packing are excluded from timed
+regions.
 
 \subsection{Selector--executor separation}
 
-Quality uses post-SwiGLU oracle output-contribution scores. These masks answer
-whether a sparsity budget is attainable; they are not deployable predictions.
-Recorded masks are replayed independently through executors. Selector latency
-is therefore excluded and no end-to-end speedup is claimed.
+Quality and latency are measured on separate paths. Quality experiments apply
+oracle masks inside the full model and report perplexity. Latency experiments
+replay fixed masks through isolated FFN executors. Selector cost is therefore
+excluded, which biases the study \emph{toward} sparsity, and we make no
+end-to-end generation claim.
 
 \subsection{Acceptance rule}
 
-The preregistered screening gate accepts a sparse condition when perplexity is
-at most 5\% above the same-run dense result. Runtime speedup is
-$100(t_{dense}/t_{block}-1)$. A model has a verified intersection only if a
-measured sparsity point passes the quality gate and produces a reproducible
-positive runtime speedup.
+Before any quality experiment ran, we fixed a screening gate: a sparse
+condition is acceptable if its perplexity is at most 5\% above the same-run
+dense perplexity. Grids and gates were committed to version control before
+results were recorded (e.g.\ the EXP-004 grid was locked in commit
+\texttt{849df02} before results commit \texttt{5b41874}); there was no external
+registry. Runtime speedup is $100\,(t_{\text{dense}}/t_{\text{sparse}}-1)$, so
+positive values mean the sparse executor is faster. A configuration has a
+\emph{verified intersection} if one measured sparsity point both passes the
+quality gate and yields a positive speedup in every repeated run.
 
 \subsection{Provenance}
 
-Each result bundle records model revision, source commit, hardware, dtype,
-thread count, seeds, masks, warmups, repetitions, raw retained timings, and
-aggregation. Independent validators check hashes, numerical tolerances,
-condition coverage, and recomputed medians. Generated figures are rebuilt from
-validated manifests rather than manually transcribed values.
+Each result bundle records model revision, source commit, build command,
+operating system, data type, thread count, seeds, masks, warm-ups,
+repetitions, raw retained timings, and aggregation. Independent validators
+recheck hashes, numerical tolerances, condition coverage, and recomputed
+medians. Figures~\ref{fig:quality} and~\ref{fig:speed} and
+Tables~\ref{tab:grid} and~\ref{tab:key} are generated by a script from
+validated manifests; other numbers in the text were transcribed from the
+per-experiment findings and checked against them.

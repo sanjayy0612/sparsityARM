@@ -33,10 +33,28 @@ def runtime_points(directory):
         case = json.loads((base / item["path"]).read_text())
         dense = case["summary"]["dense_accelerate"]["median_ms"]
         block = case["summary"]["block_native"]["median_ms"]
-        grouped.setdefault(round(case["target_sparsity"] * 100), []).append((dense / block - 1) * 100)
-    return [{"sparsity_pct": sparsity, "mean_speedup_pct": statistics.mean(values),
-             "min_speedup_pct": min(values), "max_speedup_pct": max(values)}
-            for sparsity, values in sorted(grouped.items())]
+        neuron = case["summary"]["irregular_native"]["median_ms"]
+        grouped.setdefault(round(case["target_sparsity"] * 100), []).append(
+            ((dense / block - 1) * 100, (dense / neuron - 1) * 100))
+    points = []
+    for sparsity, pairs in sorted(grouped.items()):
+        block_values, neuron_values = [p[0] for p in pairs], [p[1] for p in pairs]
+        points.append({"sparsity_pct": sparsity, "mean_speedup_pct": statistics.mean(block_values),
+                       "min_speedup_pct": min(block_values), "max_speedup_pct": max(block_values),
+                       "neuron_mean_speedup_pct": statistics.mean(neuron_values),
+                       "neuron_min_speedup_pct": min(neuron_values),
+                       "neuron_max_speedup_pct": max(neuron_values)})
+    return points
+
+
+def frontier(quality, runtime, gate):
+    """Derive the decision-relevant grid points instead of hardcoding them."""
+    ceiling = max(p["sparsity_pct"] for p in quality if p["relative_ppl_pct"] <= gate)
+    first = min(p["sparsity_pct"] for p in runtime if p["min_speedup_pct"] > 0)
+    at_ceiling = next(p for p in runtime if p["sparsity_pct"] == ceiling)
+    return {"quality_ceiling_pct": ceiling, "first_speedup_grid_pct": first,
+            "neuron_speedup_at_ceiling_min_pct": at_ceiling["neuron_min_speedup_pct"],
+            "neuron_speedup_at_ceiling_max_pct": at_ceiling["neuron_max_speedup_pct"]}
 
 
 def build_summary():
@@ -49,12 +67,13 @@ def build_summary():
         "quality_gate_relative_ppl_pct": 5.0,
         "models": {
             "Llama 3.2 1B": {"quality": llama_quality, "runtime": llama_runtime,
-                             "quality_ceiling_pct": 10, "first_speedup_grid_pct": 40},
+                             **frontier(llama_quality, llama_runtime, 5.0)},
             "TinyLlama 1.1B": {"quality": tiny_quality, "runtime": tiny_runtime,
-                               "quality_ceiling_pct": 20, "first_speedup_grid_pct": 50},
+                               **frontier(tiny_quality, tiny_runtime, 5.0)},
         },
         "decisive_experiments": ["EXP-004", "EXP-005", "EXP-012", "EXP-016", "EXP-018"],
-        "conclusion": "No tested model has a verified B8 quality-speed intersection.",
+        "conclusion": ("The packed B8 executor has no quality-speed intersection; the per-neuron "
+                       "executor on the same B8 masks is faster than dense at the quality ceiling."),
     }
 
 
@@ -153,16 +172,76 @@ def csv_text(summary):
             writer.writerow([name, "wall_clock_speedup", point["sparsity_pct"],
                              f'{point["mean_speedup_pct"]:.6f}',
                              f'{point["min_speedup_pct"]:.6f}', f'{point["max_speedup_pct"]:.6f}'])
+            writer.writerow([name, "wall_clock_speedup_per_neuron", point["sparsity_pct"],
+                             f'{point["neuron_mean_speedup_pct"]:.6f}',
+                             f'{point["neuron_min_speedup_pct"]:.6f}', f'{point["neuron_max_speedup_pct"]:.6f}'])
     return stream.getvalue()
+
+
+def pgf_data(summary, kind):
+    # Whitespace-separated tables read by pgfplots in paper/figures/*.tex.
+    lines = []
+    if kind == "quality":
+        lines.append("model sparsity value")
+        for index, model in enumerate(summary["models"].values()):
+            for point in [{"sparsity_pct": 0, "relative_ppl_pct": 0.0}] + model["quality"]:
+                lines.append(f'{index} {point["sparsity_pct"]} {point["relative_ppl_pct"]:.6f}')
+    else:
+        lines.append("model sparsity value min max neuron neuronmin neuronmax")
+        for index, model in enumerate(summary["models"].values()):
+            for point in model["runtime"]:
+                lines.append(f'{index} {point["sparsity_pct"]} {point["mean_speedup_pct"]:.6f} '
+                             f'{point["min_speedup_pct"]:.6f} {point["max_speedup_pct"]:.6f} '
+                             f'{point["neuron_mean_speedup_pct"]:.6f} '
+                             f'{point["neuron_min_speedup_pct"]:.6f} {point["neuron_max_speedup_pct"]:.6f}')
+    return "\n".join(lines) + "\n"
+
+
+def latex_grid_table(summary):
+    gate = summary["quality_gate_relative_ppl_pct"]
+    models = list(summary["models"].values())
+    grid = sorted({p["sparsity_pct"] for m in models for key in ("quality", "runtime") for p in m[key]})
+
+    def quality_cell(model, sparsity):
+        point = next((p for p in model["quality"] if p["sparsity_pct"] == sparsity), None)
+        if point is None:
+            return "--"
+        mark = "\\checkmark" if point["relative_ppl_pct"] <= gate else "$\\times$"
+        return f'{point["relative_ppl_pct"]:+.2f} {mark}'
+
+    def signed(value):
+        return f"${value:+.1f}$"
+
+    def speed_cell(prefix):
+        def cell(model, sparsity):
+            point = next((p for p in model["runtime"] if p["sparsity_pct"] == sparsity), None)
+            if point is None:
+                return "--"
+            return (f'{signed(point[prefix + "mean_speedup_pct"])} '
+                    f'[{signed(point[prefix + "min_speedup_pct"])}, {signed(point[prefix + "max_speedup_pct"])}]')
+        return cell
+
+    cells = (quality_cell, speed_cell(""), speed_cell("neuron_"))
+    rows = [f"{s}\\% & " + " & ".join(cell(m, s) for m in models for cell in cells) + " \\\\"
+            for s in grid]
+    names = " & ".join(f"\\multicolumn{{3}}{{c}}{{{name}}}" for name in summary["models"])
+    return ("\\begin{tabular}{r" + "rrr" * len(models) + "}\n\\toprule\n"
+            f" & {names} \\\\\n"
+            "\\cmidrule(lr){2-4}\\cmidrule(lr){5-7}\n"
+            "Sparsity" + " & $\\Delta$PPL & Packed B8 & Per-neuron" * len(models) + " \\\\\n\\midrule\n"
+            + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}\n")
 
 
 def latex_table(summary):
     rows = []
     for name, model in summary["models"].items():
-        rows.append(f"{name} & {model['quality_ceiling_pct']}\\% & {model['first_speedup_grid_pct']}\\% & No \\\\")
-    return """\\begin{tabular}{lrrc}
+        rows.append(f"{name} & {model['quality_ceiling_pct']}\\% & {model['first_speedup_grid_pct']}\\% & "
+                    f"${model['neuron_speedup_at_ceiling_min_pct']:+.1f}$ to "
+                    f"${model['neuron_speedup_at_ceiling_max_pct']:+.1f}$\\% \\\\")
+    return """\\begin{tabular}{lrrr}
 \\toprule
-Model & Quality ceiling & First speedup point & Overlap \\\\
+ & Quality & First B8 & Per-neuron at \\\\
+Model & ceiling & speedup & ceiling \\\\
 \\midrule
 """ + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}\n"
 
@@ -178,7 +257,10 @@ def main():
         ROOT / "paper/figures/quality-vs-sparsity.svg": svg_chart(summary, "quality"),
         ROOT / "paper/figures/speedup-vs-sparsity.svg": svg_chart(summary, "runtime"),
         ROOT / "paper/figures/quality-speed-frontier.svg": frontier_svg(summary),
+        ROOT / "paper/figures/quality.dat": pgf_data(summary, "quality"),
+        ROOT / "paper/figures/speedup.dat": pgf_data(summary, "runtime"),
         ROOT / "paper/tables/key-results.tex": latex_table(summary),
+        ROOT / "paper/tables/full-grid.tex": latex_grid_table(summary),
     }
     for path, content in outputs.items():
         if args.check:

@@ -1,17 +1,42 @@
 \section{Related Work}
 
-DejaVu introduced input-dependent predictors for contextual sparsity in
-transformer MLP and attention components~\cite{dejavu}. LLM in a Flash showed
-that storage-aware inference benefits from loading larger contiguous bundled
-rows and columns rather than many fragmented pieces~\cite{llmflash}. That
-observation motivates ARM-Sparse's layout hypothesis, although our weights
-remain in RAM and our objective is CPU latency rather than model capacity.
+\paragraph{Activation and contextual sparsity.}
+Li et al.\ observed that trained ReLU transformers naturally exhibit sparse
+FFN activations~\cite{lazyneuron}, and MoEfication showed that FFN neurons can be
+grouped into expert-like clusters after training~\cite{moefication}. DejaVu
+introduced lightweight input-dependent predictors for contextual sparsity in
+MLP and attention blocks and demonstrated GPU speedups~\cite{dejavu}. Because
+modern models use smooth SwiGLU activations~\cite{glu} rather than ReLU,
+later work either restores ReLU through fine-tuning~\cite{relustrikes} or
+thresholds activations without training~\cite{cats,teal}. These methods
+operate at neuron or channel granularity; ARM-Sparse asks what happens to
+quality when that granularity is coarsened into contiguous blocks for CPU
+efficiency.
 
-PowerInfer uses hot/cold neuron locality to divide sparse inference work across
-consumer CPU and GPU resources~\cite{powerinfer}. PowerInfer-2 elevates neuron
-clusters to scheduling and storage units on smartphones~\cite{powerinfer2}, so
-clustered execution itself is prior art. Dynamic Input Pruning jointly studies
-SwiGLU pruning and cache-aware masks on resource-constrained hardware
-~\cite{dip}. ARM-Sparse differs by holding hardware, mask budgets, and executor
-comparisons fixed to measure where contiguous blocks cross both a quality gate
-and a strong Apple CPU dense baseline.
+\paragraph{Sparsity-aware systems for constrained devices.}
+LLM in a Flash showed that loading bundled rows and columns in larger
+contiguous chunks improves flash throughput~\cite{llmflash}, which motivates
+our layout hypothesis, although our weights stay in RAM and our objective is
+CPU latency. PowerInfer exploits hot/cold neuron locality to split work
+between consumer CPUs and GPUs~\cite{powerinfer}, and PowerInfer-2 elevates
+neuron clusters to scheduling and storage units on smartphones~\cite{powerinfer2}.
+Dynamic Input Pruning jointly studies SwiGLU pruning and cache-aware masking on
+resource-constrained hardware~\cite{dip}. Clustered execution is therefore
+prior art; our study differs by fixing hardware, mask budgets, and a strong
+dense comparator and measuring exactly where block execution crosses both a
+quality gate and dense latency.
+
+\paragraph{Static and structured weight sparsity.}
+Post-training pruning methods such as SparseGPT~\cite{sparsegpt} and
+Wanda~\cite{wanda} remove weights permanently, and hardware-supported 2:4
+sparsity~\cite{mishra21} and block-sparse GPU kernels~\cite{blocksparse} show
+that structure is usually required before sparsity becomes speed. A broad
+survey is given by Hoefler et al.~\cite{hoefler}. ARM-Sparse is dynamic
+(masks change per token) and targets a CPU without sparse tensor hardware,
+which makes the structure--quality trade-off central.
+
+\paragraph{Performance modelling.}
+Our break-even analysis follows the spirit of the roofline
+model~\cite{roofline}: at batch size one, FFN execution is a sequence of
+matrix--vector products whose cost is governed mainly by how efficiently
+weights are streamed from memory.

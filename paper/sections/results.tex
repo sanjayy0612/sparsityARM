@@ -1,46 +1,120 @@
 \section{Results}
 
-\begin{figure*}[t]
+\begin{table*}[t]
 \centering
-\includesvg[width=0.88\textwidth]{figures/quality-vs-sparsity}
-\caption{Relative perplexity increase for output-contribution B8 masks. The
-dashed line is the preregistered 5\% gate.}
+\caption{Full measured B8 grid. $\Delta$PPL is relative perplexity increase
+over dense (\%; \checkmark\ passes the 5\% gate). Speedups (\%) are the mean of
+three per-run medians with [min, max] across runs; negative values mean the
+sparse executor is slower. Both executors run identical block-aligned masks
+with random FP32 weights in each model's FFN shape (EXP-012, EXP-018); the
+real-mask Llama replay is reported in Section~\ref{sec:runtime}. ``--'' marks
+conditions that were not measured.}
+\label{tab:grid}
+\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\input{tables/full-grid}
+\end{table*}
+
+\begin{figure}[t]
+\centering
+\input{figures/quality}
+\caption{Relative perplexity increase for output-norm B8 oracle masks on 16
+WikiText-2 excerpts. The dashed line is the pre-specified 5\% gate.}
 \label{fig:quality}
-\end{figure*}
+\end{figure}
 
-Llama B8 at 10\% increased perplexity by 2.520\% and passed. At 20\% it
-increased by 8.773\% and failed. TinyLlama passed at 10\% and 20\%, with
-increases of 1.336\% and 3.157\%, then failed at 30\% with 6.874\%. TinyLlama
-B32 passed only at 10\%, showing that larger contiguous units worsened the
-quality tradeoff in this screen.
+\subsection{Quality frontier}
+\label{sec:quality}
 
-\begin{figure*}[t]
+Figure~\ref{fig:quality} and Table~\ref{tab:grid} show the quality frontier.
+For Llama 3.2 1B, B8/10\% increased perplexity by 2.52\% and passed; 20\%
+(+8.77\%) and 30\% (+20.17\%) failed. TinyLlama was more tolerant, passing at
+10\% (+1.34\%) and 20\% (+3.16\%) before failing at 30\% (+6.87\%). Coarser
+blocks were worse: Llama B16 missed the gate at 10\% (+5.16\%), and TinyLlama
+B32 passed only at 10\% (+3.62\%), failing at 20\% (+10.31\%). Because the
+degradation grows monotonically, we did not measure quality at 40\% and
+beyond.
+
+\paragraph{The structure tax.} The quality loss is attributable mainly to
+contiguity rather than to sparsity itself. At the same 30\% budget, neuron-level
+top-$k$ oracle masks changed perplexity by only +0.21\% (Llama, EXP-003) and
++0.29\% (TinyLlama, EXP-016), whereas B8 blocks cost +20.17\% and +6.87\%.
+Both models contain ample \emph{unstructured} contextual sparsity; forcing it
+into groups of eight adjacent neurons destroys most of it. In the EXP-003
+screen, random B8 masks at 30\% raised Llama perplexity by 1,536\% versus
++21.3\% for activation-ranked blocks, so block scoring carries real
+information---it is simply not enough.
+
+\begin{figure}[t]
 \centering
-\includesvg[width=0.88\textwidth]{figures/speedup-vs-sparsity}
-\caption{Mean B8 FFN speedup over Accelerate dense. Points summarize three
-runs; raw per-run medians and ranges remain in the result bundles.}
+\input{figures/speedup}
+\caption{FFN speedup over Accelerate dense on identical block-aligned masks.
+Solid: packed B8 executor. Dashed: per-neuron executor with neuron-major
+weights. Points are means of three per-run medians; bars show the minimum and
+maximum run.}
 \label{fig:speed}
-\end{figure*}
+\end{figure}
 
-For the Llama geometry, native B8 remained 8.9--11.7\% slower at 30\% and
-first became faster at the 40\% grid point, by 1.6--3.1\%. TinyLlama B8
-remained 1.1--5.2\% slower at 40\% and first won at 50\%, by 10.7--17.1\%.
-The exact crossovers were not interpolated.
+\subsection{Runtime frontier}
+\label{sec:runtime}
 
-At the real-mask Llama B8/10\% quality-compatible condition, packed block
-execution was 37.26--38.77\% slower than Accelerate dense. Thus the observed
-mechanical speedups do not transfer to the accepted quality region.
+\paragraph{Packed B8.} For the Llama geometry, packed B8 was 8.9--11.7\%
+slower than dense at 30\% sparsity and first became faster at the 40\% grid
+point, by 1.6--3.1\% (Figure~\ref{fig:speed}). For the TinyLlama geometry it
+was still 1.1--5.2\% slower at 40\% and first won at 50\%, by 10.7--17.1\%.
+The exact crossovers lie between grid points and were not interpolated. We did
+not isolate why the smaller FFN needs more sparsity to break even.
 
-\begin{figure*}[t]
+\paragraph{Per-neuron on the same masks.} The per-neuron executor was faster
+than dense at every measured block-aligned sparsity, in every run. At the
+quality ceilings it gained 2.6--7.3\% (Llama, 10\%) and 5.1--7.3\% (TinyLlama,
+20\%); at 30\% it gained about 25\% and 18\% (Table~\ref{tab:grid}). Since
+both sparse executors do identical arithmetic, the roughly 30-point difference
+between them at low sparsity comes from memory layout and loop structure
+(Section~\ref{sec:analysis}).
+
+\paragraph{Real masks.} At the quality-compatible Llama condition (B8/10\%),
+we replayed real recorded masks (7,376 of 8,192 neurons active; 922 active
+blocks in a median of 93 contiguous runs). Dense took 4.01--4.13\,ms per FFN.
+The per-neuron executor took 3.93--4.10\,ms, a speedup of 0.9--3.5\% in every
+run. Packed B8 took 5.54--5.74\,ms, 37--39\% longer than dense (a speedup of
+$-27.1\%$ to $-27.9\%$), agreeing closely with the synthetic masks at the same
+sparsity ($-26.8\%$ to $-28.7\%$).
+
+\paragraph{Alignment matters for the per-neuron executor too.} In an earlier
+synthetic sweep (EXP-001) with the same per-neuron kernel, masks that selected
+individual neurons uniformly at random were slower than dense in 10 of 12
+configurations at 20--40\% sparsity (e.g.\ 5.28 versus 4.36\,ms median at
+30\%). The per-neuron speedups above therefore depend on active neurons
+arriving in aligned runs, which is exactly what block masks provide.
+
+\subsection{Quality--speed intersection}
+
+\begin{figure}[t]
 \centering
-\includesvg[width=0.88\textwidth]{figures/quality-speed-frontier}
-\caption{The quality ceiling and first measured speedup point do not overlap
-for either model.}
+\input{figures/frontier}
+\caption{Highest B8 sparsity passing the quality gate (green) versus the first
+measured sparsity at which the \emph{packed} B8 executor is reproducibly faster
+than dense (red).}
 \label{fig:frontier}
-\end{figure*}
+\end{figure}
 
-\begin{table}[h]
+\begin{table}[t]
 \centering
-\caption{Measured quality--speed frontier for B8.}
+\caption{B8 quality--speed frontier. The last column is the per-neuron
+executor's speedup range at the quality ceiling (synthetic block-aligned
+masks).}
+\label{tab:key}
+\small
+\setlength{\tabcolsep}{4pt}
 \input{tables/key-results}
 \end{table}
+
+For the packed B8 executor the intersection is empty
+(Figure~\ref{fig:frontier}, Table~\ref{tab:key}): its first measured speedup
+lies three grid points (30 percentage points) beyond the highest passing
+point for both models. Because the grid spacing is 10 points, the true gap is
+at least 10 points. For the per-neuron executor the intersection is
+\emph{non-empty but small}: B8/10\% for Llama and B8/20\% for TinyLlama pass
+the quality gate and are faster than dense in every run, by 0.9--3.5\% on real
+Llama masks and 2.6--7.3\% and 5.1--7.3\% on synthetic masks.

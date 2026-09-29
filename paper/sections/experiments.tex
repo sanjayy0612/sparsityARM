@@ -1,24 +1,51 @@
-\section{Experimental Design}
+\section{Experimental Setup}
 
-Experiments ran CPU-only on an Apple M2 MacBook with one execution thread. The
-quality corpus contains 16 deterministic WikiText-2 excerpts and 2,032
-predicted tokens per condition. Quality inference used BF16 model execution.
-Runtime experiments use single-token synthetic SwiGLU inputs with real model
-geometries: $2048\!\times\!8192\!\times\!2048$ for Llama 3.2 1B and
-$2048\!\times\!5632\!\times\!2048$ for TinyLlama 1.1B. The primary executor
-comparison is native packed FP32 B8 against Accelerate dense; cases retain 200
-post-warmup measurements and are repeated with three seeds.
+\paragraph{Hardware and software.} All experiments ran CPU-only on an Apple M2
+MacBook with 8\,GiB of unified memory (Apple specifies 100\,GB/s peak memory
+bandwidth for M2) under macOS 26.5.1, using one execution thread. No GPU,
+Metal, or Neural Engine path was used. Automated CPU-name capture failed under
+sandboxing, so the chip is operator-reported; llama.cpp independently detected
+Apple M2 in EXP-014. Accelerate was forced single-threaded
+(\texttt{BLASSetThreading} and \texttt{VECLIB\_MAXIMUM\_THREADS=1}).
 
-Five experiments carry the conclusion. EXP-004 determines the Llama quality
-frontier. EXP-005 replays its quality-compatible masks. EXP-012 measures the
-Llama mechanical break-even. EXP-016 repeats quality screening on TinyLlama,
-including B32 as a granularity control. EXP-018 measures the TinyLlama B8
-break-even. Thirteen additional experiments remain in the repository as
-baselines, failed layouts, profiling, SIMD/coalescing attempts, and quantized
-runtime probes, but are not promoted into independent headline claims.
+\paragraph{Models.} Llama 3.2 1B~\cite{llama3} (16 layers, $h=2048$,
+$m=8192$) at a pinned official revision, and TinyLlama
+1.1B~\cite{tinyllama} (22 layers, $h=2048$, $m=5632$). Both use SwiGLU FFNs.
 
-This design is favorable to sparsity: masks are clustered, selection cost is
-absent, and latency covers the FFN rather than complete token generation. A
-failure under these boundaries is therefore evidence against the current
-executor-plus-oracle configuration, not against every trained block-sparse
-system.
+\paragraph{Quality protocol.} We evaluate teacher-forced causal perplexity
+(PPL) on 16 deterministic WikiText-2~\cite{wikitext} test excerpts (the first
+16 non-heading rows with at least 128 tokens, truncated to 128 tokens), giving
+2,032 predicted tokens per condition. Inference uses BF16; masks, not
+arithmetic precision, are the variable under study, and we did not test
+whether the quality ceilings change in FP32. Masks are applied in every
+FFN layer and recomputed for every token. Per-record negative log-likelihoods
+are retained so aggregates can be independently recomputed. Dense perplexity
+was 22.774 for Llama, reproduced exactly across four experiments, and 18.017
+for TinyLlama (one run).
+
+\paragraph{Latency protocol.} Runtime experiments time one single-token SwiGLU
+FFN with each model's geometry ($2048\!\to\!8192\!\to\!2048$ and
+$2048\!\to\!5632\!\to\!2048$) using random FP32 weights, matching the
+single-precision Accelerate baseline. Each FFN call is timed with
+\texttt{std::chrono::steady\_clock}. Executor order is randomly permuted in
+every iteration so that drift affects all executors equally. Each break-even
+case cycles eight masks, uses 20 warm-up iterations and 200 retained timings
+per executor, and is repeated with three independent weight/input seeds; we
+report per-run medians and the range across runs. Break-even masks select
+$(1-s)M$ whole B8 blocks uniformly at random, so both sparse executors perform
+identical work; they are block-aligned but not otherwise clustered, and are
+not selector outputs. The quality-compatible Llama condition (B8/10\%) is
+additionally replayed with 16 real masks recorded from one prompt token
+across all 16 layers.
+
+\paragraph{Decisive experiments.} Five experiments carry the conclusion:
+EXP-004 (Llama quality frontier), EXP-005 (real-mask replay of the passing
+Llama point), EXP-012 (Llama-geometry break-even), EXP-016 (TinyLlama quality
+frontier, with B32 as a granularity control), and EXP-018 (TinyLlama-geometry
+break-even). Thirteen further experiments are summarized in
+Section~\ref{sec:supporting}.
+
+\paragraph{Bias toward sparsity.} Oracle masks, zero selector cost, and
+FFN-only timing all favor the sparse method. A negative result under these
+conditions is strong evidence against the tested configuration, and a positive
+result is an upper bound on what a deployable system could achieve.

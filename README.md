@@ -10,7 +10,7 @@
 ![Hardware](https://img.shields.io/badge/hardware-Apple%20M2-111827)
 ![Execution](https://img.shields.io/badge/execution-CPU%20only-475569)
 ![Tests](https://img.shields.io/badge/tests-92%20passed-16a34a)
-![Result](https://img.shields.io/badge/result-bounded%20negative-e11d48)
+![Result](https://img.shields.io/badge/result-bounded%20%2F%20small%20positive-f59e0b)
 
 [Read the report](paper/arm-sparse-report.pdf) ·
 [Reproduce the results](REPRODUCING.md) ·
@@ -54,25 +54,32 @@ The research question is therefore not *“Can neurons be removed?”* It is:
 ## The answer
 
 > [!IMPORTANT]
-> **Not in the tested configuration.** Blocks accelerated the isolated FFN,
-> but only at sparsity levels where model quality had already failed.
+> **Only slightly, and not with the packed block kernel.** The packed B8
+> executor accelerated the isolated FFN only at sparsity levels where model
+> quality had already failed. The *same* block-aligned masks run through a
+> simple per-neuron executor with neuron-major weights were faster than dense
+> at the quality ceiling, by a few percent.
 
 ![Measured quality-speed gap](paper/figures/quality-speed-frontier.svg)
 
-| Model | Highest measured B8 point passing quality | First measured B8 speedup point | Quality + speed overlap |
-|:--|--:|--:|:--:|
-| Llama 3.2 1B | **10%** | **40%** | ❌ No |
-| TinyLlama 1.1B | **20%** | **50%** | ❌ No |
+| Model | Highest B8 point passing quality | First packed-B8 speedup point | Packed B8 overlap | Per-neuron executor at quality ceiling |
+|:--|--:|--:|:--:|--:|
+| Llama 3.2 1B | **10%** | **40%** | ❌ No | ✅ +0.9% to +3.5% (real masks), +2.6% to +7.3% (synthetic) |
+| TinyLlama 1.1B | **20%** | **50%** | ❌ No | ✅ +5.1% to +7.3% (synthetic) |
 
 This distinction matters:
 
-- **Yes:** packed B8 blocks can mechanically accelerate an FFN kernel.
-- **No:** the tested models could not tolerate enough block sparsity to reach
-  that acceleration region.
+- **Yes:** block-aligned masks can run faster than Accelerate dense at a
+  quality-compatible sparsity, but only with neuron-major weights, and only by
+  a few percent.
+- **No:** the packed `[blocks, hidden, 8]` B8 layout never reaches a
+  quality-compatible speedup.
+- **Bounded:** at 10–20% sparsity even a perfect kernel could save at most
+  11–25% of FFN time. The quality ceiling, not the kernel, limits the gain.
 - **Not established:** deployable end-to-end sparse LLM acceleration.
 
-This is a bounded negative result—not proof that every form of block sparsity
-must fail.
+This is a bounded result, not proof that every form of block sparsity must
+fail or succeed.
 
 ## Why blocks looked promising
 
@@ -147,9 +154,13 @@ Llama failed between 10% and 20% B8 sparsity; TinyLlama failed between 20% and
 
 ![Speedup versus sparsity](paper/figures/speedup-vs-sparsity.svg)
 
-The native FP32 B8 executor first beat Accelerate dense at the 40% measured
-grid point for Llama geometry and at 50% for TinyLlama geometry. Exact
-crossovers were not interpolated.
+The packed native FP32 B8 executor first beat Accelerate dense at the 40%
+measured grid point for Llama geometry and at 50% for TinyLlama geometry.
+Exact crossovers were not interpolated. On the same masks, the per-neuron
+executor (`irregular_native`) was faster than dense at every measured
+sparsity, in every run; see Table 1 of the [report](paper/arm-sparse-report.pdf).
+On scattered, non-block-aligned masks (EXP-001) it was usually slower than
+dense, so block alignment still matters.
 
 ## The five experiments that decide the result
 
@@ -158,10 +169,10 @@ Eighteen experiments are retained, but only five carry the final conclusion:
 | Experiment | Question | Verified observation |
 |:--|:--|:--|
 | **EXP-004** | How much B8 sparsity can Llama tolerate? | 10% passed (+2.520% perplexity); 20% failed (+8.773%). |
-| **EXP-005** | Is the passing Llama point faster? | Real B8/10% replay masks were 37–39% slower than Accelerate dense. |
-| **EXP-012** | Where does Llama-shaped B8 execution break even? | First positive grid point: 40%, with +1.6% to +3.1% across three runs. |
+| **EXP-005** | Is the passing Llama point faster? | Real B8/10% masks: packed B8 took 37–39% longer than Accelerate dense; the per-neuron executor was 0.9–3.5% faster in every run. |
+| **EXP-012** | Where does Llama-shaped B8 execution break even? | Packed B8: first positive grid point 40% (+1.6% to +3.1%). Per-neuron: faster at every point, +2.6% to +7.3% at 10%. |
 | **EXP-016** | Does the result generalize to TinyLlama? | B8 passed at 10% and 20%, then failed at 30%; B32 degraded faster. |
-| **EXP-018** | Where does TinyLlama-shaped B8 break even? | First positive grid point: 50%, with +10.7% to +17.1% across three runs. |
+| **EXP-018** | Where does TinyLlama-shaped B8 break even? | Packed B8: first positive grid point 50% (+10.7% to +17.1%). Per-neuron: faster at every point, +5.1% to +7.3% at 20%. |
 
 The remaining experiments document mask expansion, scoring rules, neuron
 reordering, hot/cold layouts, phase profiling, explicit NEON, run coalescing,
@@ -173,12 +184,12 @@ the repository so the final narrative cannot hide negative evidence.
 
 ### Supported
 
-- Fixed contiguous blocks can cross optimized dense latency on Apple M2 when
-  enough blocks are skipped.
-- The tested unmodified Llama-family models lose acceptable quality before
-  reaching that kernel break-even.
-- Kernel optimization alone is unlikely to close the observed 30-percentage-
-  point quality–speed gap.
+- Packed B8 blocks cross optimized dense latency on Apple M2 only at 40–50%
+  sparsity, after the tested models have lost acceptable quality.
+- Block-aligned masks run by a per-neuron executor with neuron-major weights
+  beat dense at the quality ceiling, by a few percent (FFN only, oracle masks).
+- At the 10–20% quality ceiling, no kernel can save more than 11–25% of FFN
+  time; larger gains require raising the quality ceiling.
 
 ### Not supported
 
@@ -230,7 +241,7 @@ See [REPRODUCING.md](REPRODUCING.md) for the exact measurement boundary.
 | Runtime | CPU-only, one thread, one-token FFN calls |
 | Models | Llama 3.2 1B and TinyLlama 1.1B |
 | Geometry | 2048→8192→2048 and 2048→5632→2048 SwiGLU |
-| Primary kernel | Packed native FP32 B8 |
+| Sparse kernels | Packed native FP32 B8; per-neuron FP32 with neuron-major weights |
 | Dense baseline | Apple Accelerate FP32 |
 | Quality | 16 fixed WikiText-2 excerpts, 2,032 predicted tokens |
 | Statistics | Per-run medians and three-run ranges—not confidence intervals |
@@ -265,18 +276,19 @@ arm-sparse/
 
 ## What should happen next?
 
-The executor question has been answered for this configuration. Another local
-kernel tweak would be research drift unless a new method can move the quality
-frontier toward the measured **40–50%** speed region.
+The executor question has been answered for this configuration: the best
+kernel already captures a meaningful share of the small gain available at
+10–20% sparsity. Further kernel tuning cannot exceed that ceiling; a new
+method has to move the quality frontier toward higher block sparsity.
 
 The strongest continuation is model–system co-design:
 
 ```text
 train or reorganize for block-aligned activation
                     ↓
-retain quality near 40–50% B8 sparsity
+retain quality at higher B8 sparsity
                     ↓
-replay through the existing measured executor
+replay through the existing measured executors
                     ↓
 only then build a deployable selector
 ```
@@ -287,7 +299,8 @@ ARM-Sparse is informed by DejaVu, LLM in a Flash, PowerInfer, PowerInfer-2,
 Dynamic Input Pruning, and related contextual-sparsity systems. It does not
 claim to invent contextual sparsity, neuron clusters, or contiguous access.
 The defensible contribution is the controlled Apple M2 quality–latency
-break-even investigation and its fully retained negative evidence.
+break-even investigation, the two-executor comparison on identical masks, and
+its fully retained evidence.
 
 ## Research integrity
 
@@ -305,7 +318,8 @@ analysis, and writing. AI-generated prose is not treated as evidence.
 
 <div align="center">
 
-**Final result:** block sparsity worked as a high-sparsity kernel optimization,
-but not as a quality-preserving LLM inference method under the tested setup.
+**Final result:** packed block kernels paid off only at sparsities the models
+could not tolerate; block-aligned masks with neuron-major weights gave a small,
+quality-compatible FFN speedup that the quality ceiling caps.
 
 </div>

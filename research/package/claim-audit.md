@@ -4,11 +4,14 @@
 |---|---|---|---|
 | Llama B8/10% passed the quality gate | C008 | EXP-004 manifest | Verified |
 | Llama B8/20% and 30% failed the quality gate | C009 | EXP-004 manifest | Verified |
-| Quality-compatible Llama B8/10% replay was 37–39% slower | C010 | EXP-005 manifest and three cases | Verified |
+| Quality-compatible Llama B8/10% replay: packed B8 37–39% slower | C010 | EXP-005 manifest and three cases | Verified |
+| Same real B8/10% masks: per-neuron executor 0.9–3.5% faster than dense in every run | — (paper) | EXP-005 findings and manifest | Verified |
 | Llama B8 first beat dense at the 40% grid point | C018 | EXP-012 manifest and cases | Verified |
 | TinyLlama B8 passed through 20% and failed at 30% | C022 | EXP-016 manifest | Verified |
 | TinyLlama B8 first beat dense at the 50% grid point | C024 | EXP-018 manifest and cases | Verified |
-| Neither model has a verified quality-speed intersection | Derived from C008–C010, C018, C022, C024 | `summary.json` | Verified bounded conclusion |
+| Per-neuron executor faster than dense at every measured block-aligned sparsity (EXP-012, EXP-018) | — (paper) | EXP-012/018 case summaries (`irregular_native`), `summary.json` | Verified |
+| Packed B8 has no verified quality-speed intersection for either model | Derived from C008–C010, C018, C022, C024 | `summary.json` | Verified bounded conclusion |
+| Per-neuron executor on B8 masks has a small verified intersection (Llama B8/10%, TinyLlama B8/20%) | Derived from C008, C022 and the rows above | `summary.json` | Verified bounded conclusion |
 
 ## Citation audit
 
