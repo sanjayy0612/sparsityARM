@@ -5,11 +5,11 @@ import hashlib
 import json
 import math
 import statistics
-import subprocess
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+from research_tools.inputs import check_git_sources
+
 SPARSITIES = [0.2, 0.3, 0.4, 0.5, 0.6]
 
 
@@ -25,10 +25,7 @@ def validate(directory):
     assert manifest["shape"] == {"hidden": 2048, "intermediate": 5632, "tokens": 1}
     assert manifest["sparsities"] == SPARSITIES and manifest["block_size"] == 8
     assert len(manifest["cases"]) == manifest["runs"] * len(SPARSITIES)
-    for relative, expected in manifest["source_sha256"].items():
-        data = subprocess.run(["git", "show", f"{manifest['git_commit']}:{relative}"],
-                              cwd=ROOT, capture_output=True, check=True).stdout
-        assert hashlib.sha256(data).hexdigest() == expected
+    check_git_sources(manifest)
     seen = set()
     for item in manifest["cases"]:
         path = directory / item["path"]

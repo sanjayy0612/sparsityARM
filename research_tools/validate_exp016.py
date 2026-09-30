@@ -2,9 +2,10 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 from pathlib import Path
+
+from research_tools.inputs import check_sha, sha
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPECTED_CONDITIONS = [
@@ -12,14 +13,6 @@ EXPECTED_CONDITIONS = [
     "block_output_norm-B8-s10", "block_output_norm-B8-s20", "block_output_norm-B8-s30",
     "block_output_norm-B32-s10", "block_output_norm-B32-s20", "block_output_norm-B32-s30",
 ]
-
-
-def sha(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(8 * 1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
 
 
 def main():
@@ -31,8 +24,8 @@ def main():
     assert data["conditions"] == EXPECTED_CONDITIONS
     assert data["geometry"] == {
         "hidden_size": 2048, "intermediate_size": 5632, "num_hidden_layers": 22}
-    assert sha(Path(data["model_metadata"])) == data["model_metadata_sha256"]
-    assert sha(Path(data["corpus"])) == data["corpus_sha256"]
+    check_sha(data["model_metadata"], data["model_metadata_sha256"], "model metadata")
+    check_sha(data["corpus"], data["corpus_sha256"], "corpus")
     for relative, expected in data["source_sha256"].items():
         assert sha(ROOT / relative) == expected, f"source changed: {relative}"
     assert [result["condition"] for result in data["results"]] == EXPECTED_CONDITIONS

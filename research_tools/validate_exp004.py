@@ -2,39 +2,22 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import math
 from pathlib import Path
-import subprocess
 
-
-ROOT = Path(__file__).resolve().parents[1]
-
-
-def sha(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(8 * 1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
+from research_tools.inputs import check_git_sources, check_sha
 
 
 def validate(directory: Path) -> dict:
     manifest = json.loads((directory / "manifest.json").read_text())
     if manifest["experiment_id"] != "EXP-004" or manifest["status"] != "completed":
         raise ValueError("EXP-004 manifest is not completed")
-    if sha(Path(manifest["corpus"])) != manifest["corpus_sha256"]:
-        raise ValueError("corpus hash mismatch")
-    for relative, expected in manifest["source_sha256"].items():
-        archived = subprocess.run(["git", "show", f"{manifest['git_commit']}:{relative}"],
-                                  cwd=ROOT, capture_output=True, check=True).stdout
-        if hashlib.sha256(archived).hexdigest() != expected:
-            raise ValueError(f"source hash mismatch: {relative}")
+    check_sha(manifest["corpus"], manifest["corpus_sha256"], "corpus")
+    check_git_sources(manifest)
     snapshot = Path(manifest["snapshot"])
     for name, expected in manifest["model_file_sha256"].items():
-        if sha(snapshot / name) != expected:
-            raise ValueError(f"model hash mismatch: {name}")
+        check_sha(snapshot / name, expected, "model file")
     results = manifest["results"]
     if not results or results[0]["condition"] != "dense":
         raise ValueError("missing dense baseline")
@@ -64,7 +47,7 @@ def main():
     args = parser.parse_args()
     manifest = validate(args.directory)
     print(f"Validated EXP-004: {len(manifest['results'])} conditions, "
-          f"{manifest['results'][0]['predicted_tokens']} predicted tokens each, all hashes and aggregates")
+          f"{manifest['results'][0]['predicted_tokens']} predicted tokens each, all aggregates, and hashes of inputs present")
 
 
 if __name__ == "__main__":

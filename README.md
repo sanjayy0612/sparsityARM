@@ -223,7 +223,13 @@ The command:
    retained medians;
 2. checks that the JSON, CSV, SVG figures, and LaTeX table match their source
    artifacts;
-3. runs all **92 automated tests**.
+3. runs all **99 automated tests**.
+
+On a fresh clone, git-ignored raw inputs (WikiText corpus, Q8_0 GGUF, EXP-005
+mask bank and raw arrays, Hugging Face snapshots) are absent, so their hash
+checks are skipped with a printed `SKIPPED` warning; everything committed is
+still verified strictly. See [REPRODUCING.md](REPRODUCING.md) for details and
+for `ARMSPARSE_STRICT_INPUTS=1`.
 
 To regenerate only the derived research package:
 

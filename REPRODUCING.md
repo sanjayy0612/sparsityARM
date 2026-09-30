@@ -4,7 +4,8 @@
 
 The recorded results were produced on an Apple M2, ARM64 macOS, with CPU-only
 execution. Native kernels require Xcode command-line tools and Accelerate.
-Model downloads are not required to validate the committed result package.
+Model downloads are not required to validate the committed result package
+(see "What a fresh clone verifies" below).
 
 ## One-command verification
 
@@ -22,6 +23,37 @@ make verify-package
 2. verifies that the generated CSV, JSON, SVG figures, and LaTeX table exactly
    match their source artifacts;
 3. runs the full automated test suite.
+
+## What a fresh clone verifies
+
+Raw inputs are git-ignored (`research/data/**/*.jsonl|npz|gguf|parquet`,
+`research/results/**/sources/`, `*.npz`, `*.log`) and the Hugging Face
+snapshots live in `~/.cache`. Manifests also record absolute paths from the
+original machine; the validators rebase these onto the current checkout.
+
+Always verified, strictly, from committed files: manifest structure and
+status, case-artifact hashes, source-file hashes (via `git show` of the
+recorded commit, including EXP-005 when `sources/` is absent), recomputed
+perplexities, NLL, relative increases and thresholds (EXP-004/016), recomputed
+medians and p95 (EXP-005/012/018), correctness tolerances, EXP-014 rows,
+EXP-016 model metadata, and the generated package artifacts.
+
+Skipped with a `SKIPPED (not present in this checkout)` line when the file is
+absent (hash recorded in the manifest is printed): the WikiText corpus
+(EXP-004/016), the Hugging Face model files (EXP-004), the Q8_0 GGUF (EXP-014),
+and the EXP-005 mask bank plus raw `.npz` run and weight arrays (including the
+mask shape / 922-active-block check). If such a file is present it is always
+checked, and a mismatch fails. `verify_core.py` ends with the number of
+skipped checks.
+
+To require every input (for example on the machine that produced the data):
+
+```bash
+ARMSPARSE_STRICT_INPUTS=1 make verify-package
+# or: PYTHONPATH=. .venv/bin/python research_tools/verify_core.py --strict
+```
+
+In strict mode any missing input fails the run.
 
 ## Regenerate publication artifacts
 
